@@ -10,7 +10,7 @@
   ⚡️ <strong>Runs on $10 hardware with <5MB RAM: That's 99% less memory than OpenClaw and 98% cheaper than a Mac mini!</strong>
 </p>
 
-<p align="center">
+<!--<p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT" /></a>
   <a href="NOTICE"><img src="https://img.shields.io/badge/contributors-27+-green.svg" alt="Contributors" /></a>
   <a href="https://buymeacoffee.com/argenistherose"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Donate-yellow.svg?style=flat&logo=buy-me-a-coffee" alt="Buy Me a Coffee" /></a>
@@ -28,7 +28,7 @@ Built by students and members of the Harvard, MIT, and Sundai.Club communities.
   <a href="bootstrap.sh">One-Click Setup</a> |
   <a href="docs/README.md">Docs Hub</a> |
   <a href="docs/SUMMARY.md">Docs TOC</a>
-</p>
+</p>-->
 
 <p align="center">
   <strong>Quick Routes:</strong>
@@ -65,19 +65,19 @@ Built by students and members of the Harvard, MIT, and Sundai.Club communities.
 
 Local machine quick benchmark (macOS arm64, Feb 2026) normalized for 0.8GHz edge hardware.
 
-| | OpenClaw | NanoBot | PicoClaw | Conclave 🦀 |
-|---|---|---|---|---|
-| **Language** | TypeScript | Python | Go | **Rust** |
-| **RAM** | > 1GB | > 100MB | < 10MB | **< 5MB** |
-| **Startup (0.8GHz core)** | > 500s | > 30s | < 1s | **< 10ms** |
-| **Binary Size** | ~28MB (dist) | N/A (Scripts) | ~8MB | **3.4 MB** |
-| **Cost** | Mac Mini $599 | Linux SBC ~$50 | Linux Board $10 | **Any hardware $10** |
+| | OpenClaw | NanoBot | PicoClaw | ZeroClaw 🦀 | Conclave 🦀 | 
+|---|---|---|---|---|---|
+| **Language** | TypeScript | Python | Go | **Rust** | **Rust** |
+| **RAM** | > 1GB | > 100MB | < 10MB | **< 5MB** | **< 5MB** |
+| **Startup (0.8GHz core)** | > 500s | > 30s | < 1s | **< 10ms** | **< 10ms** |
+| **Binary Size** | ~28MB (dist) | N/A (Scripts) | ~8MB | **3.4 MB** | **3.4 MB** |
+| **Cost** | Mac Mini $599 | Linux SBC ~$50 | Linux Board $10 | **Any hardware $10** | **Any hardware $10** |
 
 > Notes: Conclave results are measured on release builds using `/usr/bin/time -l`. OpenClaw requires Node.js runtime (typically ~390MB additional memory overhead), while NanoBot requires Python runtime. PicoClaw and Conclave are static binaries.
 
-<p align="center">
+<!--<p align="center">
   <img src="zero-claw.jpeg" alt="Conclave vs OpenClaw Comparison" width="800" />
-</p>
+</p>-->
 
 ### Reproducible local measurement
 
@@ -898,11 +898,11 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Implement a trait, submit a PR:
 ## Star History
 
 <p align="center">
-  <a href="https://www.star-history.com/#conclave-labs/conclave&type=date&legend=top-left">
+  <a href="https://www.star-history.com/#gap579137/conclave&type=date&legend=top-left">
     <picture>
-     <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=conclave-labs/conclave&type=date&theme=dark&legend=top-left" />
-     <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=conclave-labs/conclave&type=date&legend=top-left" />
-     <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=conclave-labs/conclave&type=date&legend=top-left" />
+     <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=gap579137/conclave&type=date&theme=dark&legend=top-left" />
+     <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=gap579137/conclave&type=date&legend=top-left" />
+     <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=gap579137/conclave&type=date&legend=top-left" />
     </picture>
   </a>
 </p>
