@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="conclave.png" alt="Conclave" width="200" />
+  <img src="conclave.png" alt="Conclave" width="400" />
 </p>
 
 <h1 align="center">Conclave 🔥</h1>
