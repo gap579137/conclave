@@ -1,6 +1,6 @@
 # Custom Provider Configuration
 
-ZeroClaw supports custom API endpoints for both OpenAI-compatible and Anthropic-compatible providers.
+Conclave supports custom API endpoints for both OpenAI-compatible and Anthropic-compatible providers.
 
 ## Provider Types
 
@@ -28,7 +28,7 @@ default_model = "your-model-name"
 
 ### Config File
 
-Edit `~/.zeroclaw/config.toml`:
+Edit `~/.conclave/config.toml`:
 
 ```toml
 api_key = "your-api-key"
@@ -42,8 +42,8 @@ For `custom:` and `anthropic-custom:` providers, use the generic key env vars:
 
 ```bash
 export API_KEY="your-api-key"
-# or: export ZEROCLAW_API_KEY="your-api-key"
-zeroclaw agent
+# or: export CONCLAVE_API_KEY="your-api-key"
+conclave agent
 ```
 
 ## Testing Configuration
@@ -52,10 +52,10 @@ Verify your custom endpoint:
 
 ```bash
 # Interactive mode
-zeroclaw agent
+conclave agent
 
 # Single message test
-zeroclaw agent -m "test message"
+conclave agent -m "test message"
 ```
 
 ## Troubleshooting

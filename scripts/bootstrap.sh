@@ -15,13 +15,13 @@ error() {
 
 usage() {
   cat <<'USAGE'
-ZeroClaw one-click bootstrap
+Conclave one-click bootstrap
 
 Usage:
   ./bootstrap.sh [options]
 
 Modes:
-  Default mode installs/builds ZeroClaw only (requires existing Rust toolchain).
+  Default mode installs/builds Conclave only (requires existing Rust toolchain).
   Optional bootstrap mode can also install system dependencies and Rust.
 
 Options:
@@ -42,11 +42,11 @@ Examples:
   ./bootstrap.sh --interactive-onboard
 
   # Remote one-liner
-  curl -fsSL https://raw.githubusercontent.com/zeroclaw-labs/zeroclaw/main/scripts/bootstrap.sh | bash
+  curl -fsSL https://raw.githubusercontent.com/conclave-labs/conclave/main/scripts/bootstrap.sh | bash
 
 Environment:
-  ZEROCLAW_API_KEY           Used when --api-key is not provided
-  ZEROCLAW_PROVIDER          Used when --provider is not provided (default: openrouter)
+  CONCLAVE_API_KEY           Used when --api-key is not provided
+  CONCLAVE_PROVIDER          Used when --provider is not provided (default: openrouter)
 USAGE
 }
 
@@ -129,7 +129,7 @@ install_rust_toolchain() {
 SCRIPT_PATH="${BASH_SOURCE[0]:-$0}"
 SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" >/dev/null 2>&1 && pwd || pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." >/dev/null 2>&1 && pwd || pwd)"
-REPO_URL="https://github.com/zeroclaw-labs/zeroclaw.git"
+REPO_URL="https://github.com/conclave-labs/conclave.git"
 
 INSTALL_SYSTEM_DEPS=false
 INSTALL_RUST=false
@@ -137,8 +137,8 @@ RUN_ONBOARD=false
 INTERACTIVE_ONBOARD=false
 SKIP_BUILD=false
 SKIP_INSTALL=false
-API_KEY="${ZEROCLAW_API_KEY:-}"
-PROVIDER="${ZEROCLAW_PROVIDER:-openrouter}"
+API_KEY="${CONCLAVE_API_KEY:-}"
+PROVIDER="${CONCLAVE_PROVIDER:-openrouter}"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -241,7 +241,7 @@ if [[ ! -f "$WORK_DIR/Cargo.toml" ]]; then
       exit 1
     fi
 
-    TEMP_DIR="$(mktemp -d -t zeroclaw-bootstrap-XXXXXX)"
+    TEMP_DIR="$(mktemp -d -t conclave-bootstrap-XXXXXX)"
     info "No local repository detected; cloning latest main branch"
     git clone --depth 1 "$REPO_URL" "$TEMP_DIR"
     WORK_DIR="$TEMP_DIR"
@@ -249,7 +249,7 @@ if [[ ! -f "$WORK_DIR/Cargo.toml" ]]; then
   fi
 fi
 
-info "ZeroClaw bootstrap"
+info "Conclave bootstrap"
 echo "    workspace: $WORK_DIR"
 
 cd "$WORK_DIR"
@@ -262,29 +262,29 @@ else
 fi
 
 if [[ "$SKIP_INSTALL" == false ]]; then
-  info "Installing zeroclaw to cargo bin"
+  info "Installing conclave to cargo bin"
   cargo install --path "$WORK_DIR" --force --locked
 else
   info "Skipping install"
 fi
 
-ZEROCLAW_BIN=""
-if have_cmd zeroclaw; then
-  ZEROCLAW_BIN="zeroclaw"
-elif [[ -x "$WORK_DIR/target/release/zeroclaw" ]]; then
-  ZEROCLAW_BIN="$WORK_DIR/target/release/zeroclaw"
+CONCLAVE_BIN=""
+if have_cmd conclave; then
+  CONCLAVE_BIN="conclave"
+elif [[ -x "$WORK_DIR/target/release/conclave" ]]; then
+  CONCLAVE_BIN="$WORK_DIR/target/release/conclave"
 fi
 
 if [[ "$RUN_ONBOARD" == true ]]; then
-  if [[ -z "$ZEROCLAW_BIN" ]]; then
-    error "onboarding requested but zeroclaw binary is not available."
-    error "Run without --skip-install, or ensure zeroclaw is in PATH."
+  if [[ -z "$CONCLAVE_BIN" ]]; then
+    error "onboarding requested but conclave binary is not available."
+    error "Run without --skip-install, or ensure conclave is in PATH."
     exit 1
   fi
 
   if [[ "$INTERACTIVE_ONBOARD" == true ]]; then
     info "Running interactive onboarding"
-    "$ZEROCLAW_BIN" onboard --interactive
+    "$CONCLAVE_BIN" onboard --interactive
   else
     if [[ -z "$API_KEY" ]]; then
       cat <<'MSG'
@@ -292,14 +292,14 @@ if [[ "$RUN_ONBOARD" == true ]]; then
 Use either:
   --api-key "sk-..."
 or:
-  ZEROCLAW_API_KEY="sk-..." ./bootstrap.sh --onboard
+  CONCLAVE_API_KEY="sk-..." ./bootstrap.sh --onboard
 or run interactive:
   ./bootstrap.sh --interactive-onboard
 MSG
       exit 1
     fi
     info "Running quick onboarding (provider: $PROVIDER)"
-    "$ZEROCLAW_BIN" onboard --api-key "$API_KEY" --provider "$PROVIDER"
+    "$CONCLAVE_BIN" onboard --api-key "$API_KEY" --provider "$PROVIDER"
   fi
 fi
 
@@ -308,7 +308,7 @@ cat <<'DONE'
 ✅ Bootstrap complete.
 
 Next steps:
-  zeroclaw status
-  zeroclaw agent -m "Hello, ZeroClaw!"
-  zeroclaw gateway
+  conclave status
+  conclave agent -m "Hello, Conclave!"
+  conclave gateway
 DONE

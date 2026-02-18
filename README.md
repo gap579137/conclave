@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="zeroclaw.png" alt="ZeroClaw" width="200" />
+  <img src="conclave.png" alt="Conclave" width="200" />
 </p>
 
-<h1 align="center">ZeroClaw 🦀</h1>
+<h1 align="center">Conclave 🦀</h1>
 
 <p align="center">
   <strong>Zero overhead. Zero compromise. 100% Rust. 100% Agnostic.</strong><br>
@@ -53,18 +53,18 @@ Built by students and members of the Harvard, MIT, and Sundai.Club communities.
 - ⚡ **Fast Cold Starts:** Single-binary Rust runtime keeps command and daemon startup near-instant for daily operations.
 - 🌍 **Portable Architecture:** One binary-first workflow across ARM, x86, and RISC-V with swappable providers/channels/tools.
 
-### Why teams pick ZeroClaw
+### Why teams pick Conclave
 
 - **Lean by default:** small Rust binary, fast startup, low memory footprint.
 - **Secure by design:** pairing, strict sandboxing, explicit allowlists, workspace scoping.
 - **Fully swappable:** core systems are traits (providers, channels, tools, memory, tunnels).
 - **No lock-in:** OpenAI-compatible provider support + pluggable custom endpoints.
 
-## Benchmark Snapshot (ZeroClaw vs OpenClaw, Reproducible)
+## Benchmark Snapshot (Conclave vs OpenClaw, Reproducible)
 
 Local machine quick benchmark (macOS arm64, Feb 2026) normalized for 0.8GHz edge hardware.
 
-| | OpenClaw | NanoBot | PicoClaw | ZeroClaw 🦀 |
+| | OpenClaw | NanoBot | PicoClaw | Conclave 🦀 |
 |---|---|---|---|---|
 | **Language** | TypeScript | Python | Go | **Rust** |
 | **RAM** | > 1GB | > 100MB | < 10MB | **< 5MB** |
@@ -72,10 +72,10 @@ Local machine quick benchmark (macOS arm64, Feb 2026) normalized for 0.8GHz edge
 | **Binary Size** | ~28MB (dist) | N/A (Scripts) | ~8MB | **3.4 MB** |
 | **Cost** | Mac Mini $599 | Linux SBC ~$50 | Linux Board $10 | **Any hardware $10** |
 
-> Notes: ZeroClaw results are measured on release builds using `/usr/bin/time -l`. OpenClaw requires Node.js runtime (typically ~390MB additional memory overhead), while NanoBot requires Python runtime. PicoClaw and ZeroClaw are static binaries.
+> Notes: Conclave results are measured on release builds using `/usr/bin/time -l`. OpenClaw requires Node.js runtime (typically ~390MB additional memory overhead), while NanoBot requires Python runtime. PicoClaw and Conclave are static binaries.
 
 <p align="center">
-  <img src="zero-claw.jpeg" alt="ZeroClaw vs OpenClaw Comparison" width="800" />
+  <img src="zero-claw.jpeg" alt="Conclave vs OpenClaw Comparison" width="800" />
 </p>
 
 ### Reproducible local measurement
@@ -84,17 +84,17 @@ Benchmark claims can drift as code and toolchains evolve, so always measure your
 
 ```bash
 cargo build --release
-ls -lh target/release/zeroclaw
+ls -lh target/release/conclave
 
-/usr/bin/time -l target/release/zeroclaw --help
-/usr/bin/time -l target/release/zeroclaw status
+/usr/bin/time -l target/release/conclave --help
+/usr/bin/time -l target/release/conclave status
 ```
 
 Example sample (macOS arm64, measured on February 18, 2026):
 
 - Release binary size: `8.8M`
-- `zeroclaw --help`: about `0.02s` real time, ~`3.9MB` peak memory footprint
-- `zeroclaw status`: about `0.01s` real time, ~`4.1MB` peak memory footprint
+- `conclave --help`: about `0.02s` real time, ~`3.9MB` peak memory footprint
+- `conclave status`: about `0.01s` real time, ~`4.1MB` peak memory footprint
 
 ## Prerequisites
 
@@ -151,10 +151,10 @@ Example sample (macOS arm64, measured on February 18, 2026):
 
 #### One-Line Installer
 
-Or skip the steps above and install everything (system deps, Rust, ZeroClaw) in a single command:
+Or skip the steps above and install everything (system deps, Rust, Conclave) in a single command:
 
 ```bash
-curl -LsSf https://raw.githubusercontent.com/zeroclaw-labs/zeroclaw/main/scripts/install.sh | bash
+curl -LsSf https://raw.githubusercontent.com/conclave-labs/conclave/main/scripts/install.sh | bash
 ```
 
 #### Optional
@@ -172,8 +172,8 @@ curl -LsSf https://raw.githubusercontent.com/zeroclaw-labs/zeroclaw/main/scripts
 
 ```bash
 # Recommended: clone then run local bootstrap script
-git clone https://github.com/zeroclaw-labs/zeroclaw.git
-cd zeroclaw
+git clone https://github.com/conclave-labs/conclave.git
+cd conclave
 ./bootstrap.sh
 
 # Optional: bootstrap dependencies + Rust on fresh machines
@@ -186,14 +186,14 @@ cd zeroclaw
 Remote one-liner (review first in security-sensitive environments):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/zeroclaw-labs/zeroclaw/main/scripts/bootstrap.sh | bash
+curl -fsSL https://raw.githubusercontent.com/conclave-labs/conclave/main/scripts/bootstrap.sh | bash
 ```
 
 Details: [`docs/one-click-bootstrap.md`](docs/one-click-bootstrap.md) (toolchain mode may request `sudo` for system packages).
 
 ```bash
-git clone https://github.com/zeroclaw-labs/zeroclaw.git
-cd zeroclaw
+git clone https://github.com/conclave-labs/conclave.git
+cd conclave
 cargo build --release --locked
 cargo install --path . --force --locked
 
@@ -201,100 +201,105 @@ cargo install --path . --force --locked
 export PATH="$HOME/.cargo/bin:$PATH"
 
 # Quick setup (no prompts)
-zeroclaw onboard --api-key sk-... --provider openrouter
+conclave onboard --api-key sk-... --provider openrouter
 
 # Or interactive wizard
-zeroclaw onboard --interactive
+conclave onboard --interactive
 
 # Or quickly repair channels/allowlists only
-zeroclaw onboard --channels-only
+conclave onboard --channels-only
 
 # Chat
-zeroclaw agent -m "Hello, ZeroClaw!"
+conclave agent -m "Hello, Conclave!"
 
 # Interactive mode
-zeroclaw agent
+conclave agent
 
 # Start the gateway (webhook server)
-zeroclaw gateway                # default: 127.0.0.1:3000
-zeroclaw gateway --port 0       # random port (security hardened)
+conclave gateway                # default: 127.0.0.1:3000
+conclave gateway --port 0       # random port (security hardened)
 
 # Start full autonomous runtime
-zeroclaw daemon
+conclave daemon
 
 # Check status
-zeroclaw status
-zeroclaw auth status
+conclave status
+conclave auth status
 
 # Run system diagnostics
-zeroclaw doctor
+conclave doctor
 
 # Check channel health
-zeroclaw channel doctor
+conclave channel doctor
 
 # Bind a Telegram identity into allowlist
-zeroclaw channel bind-telegram 123456789
+conclave channel bind-telegram 123456789
 
 # Get integration setup details
-zeroclaw integrations info Telegram
+conclave integrations info Telegram
 
 # Note: Channels (Telegram, Discord, Slack) require daemon to be running
-# zeroclaw daemon
+# conclave daemon
 
 # Manage background service
-zeroclaw service install
-zeroclaw service status
+conclave service install
+conclave service status
 
 # Migrate memory from OpenClaw (safe preview first)
-zeroclaw migrate openclaw --dry-run
-zeroclaw migrate openclaw
+conclave migrate openclaw --dry-run
+conclave migrate openclaw
 ```
 
 > **Dev fallback (no global install):** prefix commands with `cargo run --release --` (example: `cargo run --release -- status`).
 
 ## Subscription Auth (OpenAI Codex / Claude Code)
 
-ZeroClaw now supports subscription-native auth profiles (multi-account, encrypted at rest).
+Conclave now supports subscription-native auth profiles (multi-account, encrypted at rest).
 
-- Store file: `~/.zeroclaw/auth-profiles.json`
-- Encryption key: `~/.zeroclaw/.secret_key`
+- Store file: `~/.conclave/auth-profiles.json`
+- Encryption key: `~/.conclave/.secret_key`
 - Profile id format: `<provider>:<profile_name>` (example: `openai-codex:work`)
 
 OpenAI Codex OAuth (ChatGPT subscription):
 
 ```bash
-# Recommended on servers/headless
-zeroclaw auth login --provider openai-codex --device-code
+# Recommended on servers/headless (device-code flow, no browser needed)
+conclave auth login --provider openai-codex --device-code
 
-# Browser/callback flow with paste fallback
-zeroclaw auth login --provider openai-codex --profile default
-zeroclaw auth paste-redirect --provider openai-codex --profile default
+# Headless mode: browser flow with manual callback URL paste
+conclave auth login --provider openai-codex --headless
+
+# Desktop mode: browser flow with automatic localhost callback
+conclave auth login --provider openai-codex --profile default
+
+# Manual paste fallback (if callback capture fails)
+conclave auth paste-redirect --provider openai-codex --profile default
 
 # Check / refresh / switch profile
-zeroclaw auth status
-zeroclaw auth refresh --provider openai-codex --profile default
-zeroclaw auth use --provider openai-codex --profile work
+conclave auth status
+conclave auth refresh --provider openai-codex --profile default
+conclave auth use --provider openai-codex --profile work
 ```
 
 Claude Code / Anthropic setup-token:
 
 ```bash
 # Paste subscription/setup token (Authorization header mode)
-zeroclaw auth paste-token --provider anthropic --profile default --auth-kind authorization
+conclave auth paste-token --provider anthropic --profile default --auth-kind authorization
 
 # Alias command
-zeroclaw auth setup-token --provider anthropic --profile default
+conclave auth setup-token --provider anthropic --profile default
 ```
 
 Run the agent with subscription auth:
 
 ```bash
-zeroclaw agent --provider openai-codex -m "hello"
-zeroclaw agent --provider openai-codex --auth-profile openai-codex:work -m "hello"
+conclave agent --provider openai-codex -m "hello"
+conclave agent --provider openai-codex --auth-profile openai-codex:work -m "hello"
 
 # Anthropic supports both API key and auth token env vars:
 # ANTHROPIC_AUTH_TOKEN, ANTHROPIC_OAUTH_TOKEN, ANTHROPIC_API_KEY
-zeroclaw agent --provider anthropic -m "hello"
+conclave agent --provider anthropic -m "hello"
 ```
 
 ## Architecture
@@ -302,12 +307,12 @@ zeroclaw agent --provider anthropic -m "hello"
 Every subsystem is a **trait** — swap implementations with a config change, zero code changes.
 
 <p align="center">
-  <img src="docs/architecture.svg" alt="ZeroClaw Architecture" width="900" />
+  <img src="docs/architecture.svg" alt="Conclave Architecture" width="900" />
 </p>
 
 | Subsystem | Trait | Ships with | Extend |
 |-----------|-------|------------|--------|
-| **AI Models** | `Provider` | Provider catalog via `zeroclaw providers` (currently 28 built-ins + aliases, plus custom endpoints) | `custom:https://your-api.com` (OpenAI-compatible) or `anthropic-custom:https://your-api.com` |
+| **AI Models** | `Provider` | Provider catalog via `conclave providers` (currently 28 built-ins + aliases, plus custom endpoints) | `custom:https://your-api.com` (OpenAI-compatible) or `anthropic-custom:https://your-api.com` |
 | **Channels** | `Channel` | CLI, Telegram, Discord, Slack, Mattermost, iMessage, Matrix, Signal, WhatsApp, Email, IRC, Lark, DingTalk, QQ, Webhook | Any messaging API |
 | **Memory** | `Memory` | SQLite hybrid search, PostgreSQL backend (configurable storage provider), Lucid bridge, Markdown files, explicit `none` backend, snapshot/hydrate, optional response cache | Any persistence backend |
 | **Tools** | `Tool` | shell/file/memory, cron/schedule, git, pushover, browser, http_request, screenshot/image_info, composio (opt-in), delegate, hardware tools | Any capability |
@@ -325,7 +330,7 @@ Every subsystem is a **trait** — swap implementations with a config change, ze
 - ✅ Supported today: `runtime.kind = "native"` or `runtime.kind = "docker"`
 - 🚧 Planned, not implemented yet: WASM / edge runtimes
 
-When an unsupported `runtime.kind` is configured, ZeroClaw now exits with a clear error instead of silently falling back to native.
+When an unsupported `runtime.kind` is configured, Conclave now exits with a clear error instead of silently falling back to native.
 
 ### Memory System (Full-Stack Search Engine)
 
@@ -354,12 +359,12 @@ keyword_weight = 0.3
 # backend = "none" uses an explicit no-op memory backend (no persistence)
 
 # Optional: storage-provider override for remote memory backends.
-# When provider = "postgres", ZeroClaw uses PostgreSQL for memory persistence.
+# When provider = "postgres", Conclave uses PostgreSQL for memory persistence.
 # The db_url key also accepts alias `dbURL` for backward compatibility.
 #
 # [storage.provider.config]
 # provider = "postgres"
-# db_url = "postgres://user:password@host:5432/zeroclaw"
+# db_url = "postgres://user:password@host:5432/conclave"
 # schema = "public"
 # table = "memories"
 # connect_timeout_secs = 15
@@ -368,17 +373,17 @@ keyword_weight = 0.3
 # sqlite_open_timeout_secs = 30
 
 # Optional for backend = "lucid"
-# ZEROCLAW_LUCID_CMD=/usr/local/bin/lucid            # default: lucid
-# ZEROCLAW_LUCID_BUDGET=200                          # default: 200
-# ZEROCLAW_LUCID_LOCAL_HIT_THRESHOLD=3               # local hit count to skip external recall
-# ZEROCLAW_LUCID_RECALL_TIMEOUT_MS=120               # low-latency budget for lucid context recall
-# ZEROCLAW_LUCID_STORE_TIMEOUT_MS=800                # async sync timeout for lucid store
-# ZEROCLAW_LUCID_FAILURE_COOLDOWN_MS=15000           # cooldown after lucid failure to avoid repeated slow attempts
+# CONCLAVE_LUCID_CMD=/usr/local/bin/lucid            # default: lucid
+# CONCLAVE_LUCID_BUDGET=200                          # default: 200
+# CONCLAVE_LUCID_LOCAL_HIT_THRESHOLD=3               # local hit count to skip external recall
+# CONCLAVE_LUCID_RECALL_TIMEOUT_MS=120               # low-latency budget for lucid context recall
+# CONCLAVE_LUCID_STORE_TIMEOUT_MS=800                # async sync timeout for lucid store
+# CONCLAVE_LUCID_FAILURE_COOLDOWN_MS=15000           # cooldown after lucid failure to avoid repeated slow attempts
 ```
 
 ## Security
 
-ZeroClaw enforces security at **every layer** — not just the sandbox. It passes all items from the community security checklist.
+Conclave enforces security at **every layer** — not just the sandbox. It passes all items from the community security checklist.
 
 ### Security Checklist
 
@@ -389,7 +394,7 @@ ZeroClaw enforces security at **every layer** — not just the sandbox. It passe
 | 3 | **Filesystem scoped (no /)** | ✅ | `workspace_only = true` by default. 14 system dirs + 4 sensitive dotfiles blocked. Null byte injection blocked. Symlink escape detection via canonicalization + resolved-path workspace checks in file read/write tools. |
 | 4 | **Access via tunnel only** | ✅ | Gateway refuses public bind without active tunnel. Supports Tailscale, Cloudflare, ngrok, or any custom tunnel. |
 
-> **Run your own nmap:** `nmap -p 1-65535 <your-host>` — ZeroClaw binds to localhost only, so nothing is exposed unless you explicitly configure a tunnel.
+> **Run your own nmap:** `nmap -p 1-65535 <your-host>` — Conclave binds to localhost only, so nothing is exposed unless you explicitly configure a tunnel.
 
 ### Channel allowlists (deny-by-default)
 
@@ -415,13 +420,13 @@ Telegram operator-approval flow:
 
 1. Keep `[channels_config.telegram].allowed_users = []` for deny-by-default startup.
 2. Unauthorized users receive a hint with a copyable operator command:
-   `zeroclaw channel bind-telegram <IDENTITY>`.
+   `conclave channel bind-telegram <IDENTITY>`.
 3. Operator runs that command locally, then user retries sending a message.
 
 If you need a one-shot manual approval, run:
 
 ```bash
-zeroclaw channel bind-telegram 123456789
+conclave channel bind-telegram 123456789
 ```
 
 If you're not sure which identity to use:
@@ -434,7 +439,7 @@ If you hit authorization warnings in logs (for example: `ignoring message from u
 rerun channel setup only:
 
 ```bash
-zeroclaw onboard --channels-only
+conclave onboard --channels-only
 ```
 
 ### Telegram media replies
@@ -442,7 +447,7 @@ zeroclaw onboard --channels-only
 Telegram routing now replies to the source **chat ID** from incoming updates (instead of usernames),
 which avoids `Bad Request: chat not found` failures.
 
-For non-text replies, ZeroClaw can send Telegram attachments when the assistant includes markers:
+For non-text replies, Conclave can send Telegram attachments when the assistant includes markers:
 
 - `[IMAGE:<path-or-url>]`
 - `[DOCUMENT:<path-or-url>]`
@@ -466,7 +471,7 @@ WhatsApp uses Meta's Cloud API with webhooks (push-based, not polling):
    - **Phone Number ID:** From WhatsApp → API Setup → Phone number ID
    - **Verify Token:** You define this (any random string) — Meta will send it back during webhook verification
 
-3. **Configure ZeroClaw:**
+3. **Configure Conclave:**
    ```toml
    [channels_config.whatsapp]
    access_token = "EAABx..."
@@ -477,7 +482,7 @@ WhatsApp uses Meta's Cloud API with webhooks (push-based, not polling):
 
 4. **Start the gateway with a tunnel:**
    ```bash
-   zeroclaw gateway --port 3000
+   conclave gateway --port 3000
    ```
    WhatsApp requires HTTPS, so use a tunnel (ngrok, Cloudflare, Tailscale Funnel).
 
@@ -487,11 +492,11 @@ WhatsApp uses Meta's Cloud API with webhooks (push-based, not polling):
    - **Verify Token:** Same as your `verify_token` in config
    - Subscribe to `messages` field
 
-6. **Test:** Send a message to your WhatsApp Business number — ZeroClaw will respond via the LLM.
+6. **Test:** Send a message to your WhatsApp Business number — Conclave will respond via the LLM.
 
 ## Configuration
 
-Config: `~/.zeroclaw/config.toml` (created by `onboard`)
+Config: `~/.conclave/config.toml` (created by `onboard`)
 
 ```toml
 api_key = "sk-..."
@@ -517,7 +522,7 @@ keyword_weight = 0.3
 # Optional remote storage-provider override (PostgreSQL example)
 # [storage.provider.config]
 # provider = "postgres"
-# db_url = "postgres://user:password@host:5432/zeroclaw"
+# db_url = "postgres://user:password@host:5432/conclave"
 # schema = "public"
 # table = "memories"
 # connect_timeout_secs = 15
@@ -583,7 +588,7 @@ window_allowlist = []          # optional window title/process allowlist hints
 #   "action": "mouse_click",
 #   "params": {"x": 640, "y": 360, "button": "left"},
 #   "policy": {"allowed_domains": [...], "window_allowlist": [...], "max_coordinate_x": 3840, "max_coordinate_y": 2160},
-#   "metadata": {"session_name": "...", "source": "zeroclaw.browser", "version": "..."}
+#   "metadata": {"session_name": "...", "source": "conclave.browser", "version": "..."}
 # }
 # Response: {"success": true, "data": {...}} or {"success": false, "error": "..."}
 
@@ -600,7 +605,7 @@ format = "openclaw"            # "openclaw" (default, markdown files) or "aieos"
 
 ### Ollama Local and Remote Endpoints
 
-ZeroClaw uses one provider key (`ollama`) for both local and remote Ollama deployments:
+Conclave uses one provider key (`ollama`) for both local and remote Ollama deployments:
 
 - Local Ollama: keep `api_url` unset, run `ollama serve`, and use models like `llama3.2`.
 - Remote Ollama endpoint (including Ollama Cloud): set `api_url` to the remote endpoint and set `api_key` (or `OLLAMA_API_KEY`) when required.
@@ -619,16 +624,16 @@ api_key = "ollama_api_key_here"
 
 For detailed configuration of custom OpenAI-compatible and Anthropic-compatible endpoints, see [docs/custom-providers.md](docs/custom-providers.md).
 
-## Python Companion Package (`zeroclaw-tools`)
+## Python Companion Package (`conclave-tools`)
 
-For LLM providers with inconsistent native tool calling (e.g., GLM-5/Zhipu), ZeroClaw ships a Python companion package with **LangGraph-based tool calling** for guaranteed consistency:
+For LLM providers with inconsistent native tool calling (e.g., GLM-5/Zhipu), Conclave ships a Python companion package with **LangGraph-based tool calling** for guaranteed consistency:
 
 ```bash
-pip install zeroclaw-tools
+pip install conclave-tools
 ```
 
 ```python
-from zeroclaw_tools import create_agent, shell, file_read
+from conclave_tools import create_agent, shell, file_read
 from langchain_core.messages import HumanMessage
 
 # Works with any OpenAI-compatible provider
@@ -655,7 +660,7 @@ See [`python/README.md`](python/README.md) for full documentation.
 
 ## Identity System (AIEOS Support)
 
-ZeroClaw supports **identity-agnostic** AI personas through two formats:
+Conclave supports **identity-agnostic** AI personas through two formats:
 
 ### OpenClaw (Default)
 
@@ -667,7 +672,7 @@ Traditional markdown files in your workspace:
 
 ### AIEOS (AI Entity Object Specification)
 
-[AIEOS](https://aieos.org) is a standardization framework for portable AI identity. ZeroClaw supports AIEOS v1.1 JSON payloads, allowing you to:
+[AIEOS](https://aieos.org) is a standardization framework for portable AI identity. Conclave supports AIEOS v1.1 JSON payloads, allowing you to:
 
 - **Import identities** from the AIEOS ecosystem
 - **Export identities** to other AIEOS-compatible systems
@@ -729,7 +734,7 @@ aieos_inline = '''
 '''
 ```
 
-ZeroClaw accepts both canonical AIEOS generator payloads and compact legacy payloads, then normalizes them into one system prompt format.
+Conclave accepts both canonical AIEOS generator payloads and compact legacy payloads, then normalizes them into one system prompt format.
 
 #### AIEOS Schema Sections
 
@@ -811,7 +816,7 @@ cargo build --release --locked
 cargo install --path . --force --locked
 ```
 
-ZeroClaw is configured to use `rustls` for HTTP/TLS dependencies; `--locked` keeps the transitive graph deterministic on fresh environments.
+Conclave is configured to use `rustls` for HTTP/TLS dependencies; `--locked` keeps the transitive graph deterministic on fresh environments.
 
 To skip the hook when you need a quick push during development:
 
@@ -852,9 +857,9 @@ For deployment and runtime operations:
 - Network deployment guide: [docs/network-deployment.md](docs/network-deployment.md)
 - Proxy agent playbook: [docs/proxy-agent-playbook.md](docs/proxy-agent-playbook.md)
 
-## Support ZeroClaw
+## Support Conclave
 
-If ZeroClaw helps your work and you want to support ongoing development, you can donate here:
+If Conclave helps your work and you want to support ongoing development, you can donate here:
 
 <a href="https://buymeacoffee.com/argenistherose"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-Donate-yellow.svg?style=for-the-badge&logo=buy-me-a-coffee" alt="Buy Me a Coffee" /></a>
 
@@ -883,20 +888,20 @@ See [CONTRIBUTING.md](CONTRIBUTING.md). Implement a trait, submit a PR:
 - New `Tool` → `src/tools/`
 - New `Memory` → `src/memory/`
 - New `Tunnel` → `src/tunnel/`
-- New `Skill` → `~/.zeroclaw/workspace/skills/<name>/`
+- New `Skill` → `~/.conclave/workspace/skills/<name>/`
 
 ---
 
-**ZeroClaw** — Zero overhead. Zero compromise. Deploy anywhere. Swap anything. 🦀
+**Conclave** — Zero overhead. Zero compromise. Deploy anywhere. Swap anything. 🦀
 
 ## Star History
 
 <p align="center">
-  <a href="https://www.star-history.com/#zeroclaw-labs/zeroclaw&type=date&legend=top-left">
+  <a href="https://www.star-history.com/#conclave-labs/conclave&type=date&legend=top-left">
     <picture>
-     <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=zeroclaw-labs/zeroclaw&type=date&theme=dark&legend=top-left" />
-     <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=zeroclaw-labs/zeroclaw&type=date&legend=top-left" />
-     <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=zeroclaw-labs/zeroclaw&type=date&legend=top-left" />
+     <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=conclave-labs/conclave&type=date&theme=dark&legend=top-left" />
+     <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=conclave-labs/conclave&type=date&legend=top-left" />
+     <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=conclave-labs/conclave&type=date&legend=top-left" />
     </picture>
   </a>
 </p>

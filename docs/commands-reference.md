@@ -1,6 +1,6 @@
-# ZeroClaw Commands Reference
+# Conclave Commands Reference
 
-This reference is derived from the current CLI surface (`zeroclaw --help`).
+This reference is derived from the current CLI surface (`conclave --help`).
 
 Last verified: **February 18, 2026**.
 
@@ -24,61 +24,62 @@ Last verified: **February 18, 2026**.
 | `migrate` | Import from external runtimes (currently OpenClaw) |
 | `hardware` | Discover and introspect USB hardware |
 | `peripheral` | Configure and flash peripherals |
+| `auth` | Manage OAuth and token-based authentication profiles |
 
 ## Command Groups
 
 ### `onboard`
 
-- `zeroclaw onboard`
-- `zeroclaw onboard --interactive`
-- `zeroclaw onboard --channels-only`
-- `zeroclaw onboard --api-key <KEY> --provider <ID> --memory <sqlite|lucid|markdown|none>`
+- `conclave onboard`
+- `conclave onboard --interactive`
+- `conclave onboard --channels-only`
+- `conclave onboard --api-key <KEY> --provider <ID> --memory <sqlite|lucid|markdown|none>`
 
 ### `agent`
 
-- `zeroclaw agent`
-- `zeroclaw agent -m "Hello"`
-- `zeroclaw agent --provider <ID> --model <MODEL> --temperature <0.0-2.0>`
-- `zeroclaw agent --peripheral <board:path>`
+- `conclave agent`
+- `conclave agent -m "Hello"`
+- `conclave agent --provider <ID> --model <MODEL> --temperature <0.0-2.0>`
+- `conclave agent --peripheral <board:path>`
 
 ### `gateway` / `daemon`
 
-- `zeroclaw gateway [--host <HOST>] [--port <PORT>]`
-- `zeroclaw daemon [--host <HOST>] [--port <PORT>]`
+- `conclave gateway [--host <HOST>] [--port <PORT>]`
+- `conclave daemon [--host <HOST>] [--port <PORT>]`
 
 ### `service`
 
-- `zeroclaw service install`
-- `zeroclaw service start`
-- `zeroclaw service stop`
-- `zeroclaw service status`
-- `zeroclaw service uninstall`
+- `conclave service install`
+- `conclave service start`
+- `conclave service stop`
+- `conclave service status`
+- `conclave service uninstall`
 
 ### `cron`
 
-- `zeroclaw cron list`
-- `zeroclaw cron add <expr> [--tz <IANA_TZ>] <command>`
-- `zeroclaw cron add-at <rfc3339_timestamp> <command>`
-- `zeroclaw cron add-every <every_ms> <command>`
-- `zeroclaw cron once <delay> <command>`
-- `zeroclaw cron remove <id>`
-- `zeroclaw cron pause <id>`
-- `zeroclaw cron resume <id>`
+- `conclave cron list`
+- `conclave cron add <expr> [--tz <IANA_TZ>] <command>`
+- `conclave cron add-at <rfc3339_timestamp> <command>`
+- `conclave cron add-every <every_ms> <command>`
+- `conclave cron once <delay> <command>`
+- `conclave cron remove <id>`
+- `conclave cron pause <id>`
+- `conclave cron resume <id>`
 
 ### `models`
 
-- `zeroclaw models refresh`
-- `zeroclaw models refresh --provider <ID>`
-- `zeroclaw models refresh --force`
+- `conclave models refresh`
+- `conclave models refresh --provider <ID>`
+- `conclave models refresh --force`
 
 ### `channel`
 
-- `zeroclaw channel list`
-- `zeroclaw channel start`
-- `zeroclaw channel doctor`
-- `zeroclaw channel bind-telegram <IDENTITY>`
-- `zeroclaw channel add <type> <json>`
-- `zeroclaw channel remove <name>`
+- `conclave channel list`
+- `conclave channel start`
+- `conclave channel doctor`
+- `conclave channel bind-telegram <IDENTITY>`
+- `conclave channel add <type> <json>`
+- `conclave channel remove <name>`
 
 Runtime in-chat commands (Telegram/Discord while channel server is running):
 
@@ -91,37 +92,51 @@ Runtime in-chat commands (Telegram/Discord while channel server is running):
 
 ### `integrations`
 
-- `zeroclaw integrations info <name>`
+- `conclave integrations info <name>`
 
 ### `skills`
 
-- `zeroclaw skills list`
-- `zeroclaw skills install <source>`
-- `zeroclaw skills remove <name>`
+- `conclave skills list`
+- `conclave skills install <source>`
+- `conclave skills remove <name>`
 
 ### `migrate`
 
-- `zeroclaw migrate openclaw [--source <path>] [--dry-run]`
+- `conclave migrate openclaw [--source <path>] [--dry-run]`
 
 ### `hardware`
 
-- `zeroclaw hardware discover`
-- `zeroclaw hardware introspect <path>`
-- `zeroclaw hardware info [--chip <chip_name>]`
+- `conclave hardware discover`
+- `conclave hardware introspect <path>`
+- `conclave hardware info [--chip <chip_name>]`
 
 ### `peripheral`
 
-- `zeroclaw peripheral list`
-- `zeroclaw peripheral add <board> <path>`
-- `zeroclaw peripheral flash [--port <serial_port>]`
-- `zeroclaw peripheral setup-uno-q [--host <ip_or_host>]`
-- `zeroclaw peripheral flash-nucleo`
+- `conclave peripheral list`
+- `conclave peripheral add <board> <path>`
+- `conclave peripheral flash [--port <serial_port>]`
+- `conclave peripheral setup-uno-q [--host <ip_or_host>]`
+- `conclave peripheral flash-nucleo`
+
+### `auth`
+
+- `conclave auth login --provider openai-codex` — Browser OAuth flow (prompts for environment type)
+- `conclave auth login --provider openai-codex --headless` — Headless mode: paste callback URL manually
+- `conclave auth login --provider openai-codex --device-code` — Device-code flow (recommended for servers)
+- `conclave auth paste-redirect --provider openai-codex --profile <name>` — Complete OAuth by pasting callback URL
+- `conclave auth paste-token --provider anthropic --profile <name>` — Store API key or auth token
+- `conclave auth setup-token --provider anthropic` — Alias for paste-token with authorization mode
+- `conclave auth refresh --provider openai-codex --profile <name>` — Refresh access token
+- `conclave auth logout --provider <provider> --profile <name>` — Remove auth profile
+- `conclave auth use --provider <provider> --profile <name>` — Set active profile
+- `conclave auth list` — List all auth profiles
+- `conclave auth status` — Show auth status with token expiry info
 
 ## Validation Tip
 
 To verify docs against your current binary quickly:
 
 ```bash
-zeroclaw --help
-zeroclaw <command> --help
+conclave --help
+conclave <command> --help
 ```

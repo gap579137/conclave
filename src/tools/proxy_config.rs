@@ -60,7 +60,7 @@ impl ProxyConfigTool {
     fn parse_scope(raw: &str) -> Option<ProxyScope> {
         match raw.trim().to_ascii_lowercase().as_str() {
             "environment" | "env" => Some(ProxyScope::Environment),
-            "zeroclaw" | "internal" | "core" => Some(ProxyScope::Zeroclaw),
+            "conclave" | "internal" | "core" => Some(ProxyScope::Conclave),
             "services" | "service" => Some(ProxyScope::Services),
             _ => None,
         }
@@ -181,7 +181,7 @@ impl ProxyConfigTool {
                 .as_str()
                 .ok_or_else(|| anyhow::anyhow!("'scope' must be a string"))?;
             proxy.scope = Self::parse_scope(scope).ok_or_else(|| {
-                anyhow::anyhow!("Invalid scope '{scope}'. Use environment|zeroclaw|services")
+                anyhow::anyhow!("Invalid scope '{scope}'. Use environment|conclave|services")
             })?;
         }
 
@@ -314,7 +314,7 @@ impl Tool for ProxyConfigTool {
     }
 
     fn description(&self) -> &str {
-        "Manage ZeroClaw proxy settings (scope: environment | zeroclaw | services), including runtime and process env application"
+        "Manage Conclave proxy settings (scope: environment | conclave | services), including runtime and process env application"
     }
 
     fn parameters_schema(&self) -> Value {
@@ -332,7 +332,7 @@ impl Tool for ProxyConfigTool {
                 },
                 "scope": {
                     "type": "string",
-                    "description": "Proxy scope: environment | zeroclaw | services"
+                    "description": "Proxy scope: environment | conclave | services"
                 },
                 "http_proxy": {
                     "type": ["string", "null"],

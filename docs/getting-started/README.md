@@ -10,9 +10,9 @@ For first-time setup and quick orientation.
 
 ## Onboarding and Validation
 
-- Quick onboarding: `zeroclaw onboard --api-key "sk-..." --provider openrouter`
-- Interactive onboarding: `zeroclaw onboard --interactive`
-- Validate environment: `zeroclaw status` + `zeroclaw doctor`
+- Quick onboarding: `conclave onboard --api-key "sk-..." --provider openrouter`
+- Interactive onboarding: `conclave onboard --interactive`
+- Validate environment: `conclave status` + `conclave doctor`
 
 ## Next
 

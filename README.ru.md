@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="zeroclaw.png" alt="ZeroClaw" width="200" />
+  <img src="conclave.png" alt="Conclave" width="200" />
 </p>
 
-<h1 align="center">ZeroClaw 🦀（Русский）</h1>
+<h1 align="center">Conclave 🦀（Русский）</h1>
 
 <p align="center">
   <strong>Zero overhead. Zero compromise. 100% Rust. 100% Agnostic.</strong>
@@ -37,24 +37,24 @@
 
 ## О проекте
 
-ZeroClaw — это производительная и расширяемая инфраструктура автономного AI-агента:
+Conclave — это производительная и расширяемая инфраструктура автономного AI-агента:
 
 - Нативно на Rust, единый бинарник, переносимость между ARM / x86 / RISC-V
 - Архитектура на Trait (`Provider`, `Channel`, `Tool`, `Memory` и др.)
 - Безопасные значения по умолчанию: pairing, явные allowlist, sandbox и scope-ограничения
 
-## Почему выбирают ZeroClaw
+## Почему выбирают Conclave
 
 - **Лёгкий runtime по умолчанию**: Повседневные CLI-операции и `status` обычно укладываются в несколько МБ памяти.
 - **Оптимизирован для недорогих сред**: Подходит для бюджетных плат и небольших cloud-инстансов без тяжёлой runtime-обвязки.
 - **Быстрый cold start**: Архитектура одного Rust-бинарника ускоряет запуск основных команд и daemon-режима.
 - **Портативная модель деплоя**: Единый подход для ARM / x86 / RISC-V и возможность менять providers/channels/tools.
 
-## Снимок бенчмарка (ZeroClaw vs OpenClaw, воспроизводимо)
+## Снимок бенчмарка (Conclave vs OpenClaw, воспроизводимо)
 
 Ниже — быстрый локальный сравнительный срез (macOS arm64, февраль 2026), нормализованный под 0.8GHz edge CPU.
 
-| | OpenClaw | NanoBot | PicoClaw | ZeroClaw 🦀 |
+| | OpenClaw | NanoBot | PicoClaw | Conclave 🦀 |
 |---|---|---|---|---|
 | **Язык** | TypeScript | Python | Go | **Rust** |
 | **RAM** | > 1GB | > 100MB | < 10MB | **< 5MB** |
@@ -62,10 +62,10 @@ ZeroClaw — это производительная и расширяемая �
 | **Размер бинарника** | ~28MB (dist) | N/A (скрипты) | ~8MB | **3.4 MB** |
 | **Стоимость** | Mac Mini $599 | Linux SBC ~$50 | Linux-плата $10 | **Любое железо за $10** |
 
-> Примечание: результаты ZeroClaw получены на release-сборке с помощью `/usr/bin/time -l`. OpenClaw требует Node.js runtime; только этот runtime обычно добавляет около 390MB дополнительного потребления памяти. NanoBot требует Python runtime. PicoClaw и ZeroClaw — статические бинарники.
+> Примечание: результаты Conclave получены на release-сборке с помощью `/usr/bin/time -l`. OpenClaw требует Node.js runtime; только этот runtime обычно добавляет около 390MB дополнительного потребления памяти. NanoBot требует Python runtime. PicoClaw и Conclave — статические бинарники.
 
 <p align="center">
-  <img src="zero-claw.jpeg" alt="Сравнение ZeroClaw и OpenClaw" width="800" />
+  <img src="zero-claw.jpeg" alt="Сравнение Conclave и OpenClaw" width="800" />
 </p>
 
 ### Локально воспроизводимое измерение
@@ -74,23 +74,23 @@ ZeroClaw — это производительная и расширяемая �
 
 ```bash
 cargo build --release
-ls -lh target/release/zeroclaw
+ls -lh target/release/conclave
 
-/usr/bin/time -l target/release/zeroclaw --help
-/usr/bin/time -l target/release/zeroclaw status
+/usr/bin/time -l target/release/conclave --help
+/usr/bin/time -l target/release/conclave status
 ```
 
 Текущие примерные значения из README (macOS arm64, 2026-02-18):
 
 - Размер release-бинарника: `8.8M`
-- `zeroclaw --help`: ~`0.02s`, пик памяти ~`3.9MB`
-- `zeroclaw status`: ~`0.01s`, пик памяти ~`4.1MB`
+- `conclave --help`: ~`0.02s`, пик памяти ~`3.9MB`
+- `conclave status`: ~`0.01s`, пик памяти ~`4.1MB`
 
 ## Установка в 1 клик
 
 ```bash
-git clone https://github.com/zeroclaw-labs/zeroclaw.git
-cd zeroclaw
+git clone https://github.com/conclave-labs/conclave.git
+cd conclave
 ./bootstrap.sh
 ```
 
@@ -101,20 +101,20 @@ cd zeroclaw
 ## Быстрый старт
 
 ```bash
-git clone https://github.com/zeroclaw-labs/zeroclaw.git
-cd zeroclaw
+git clone https://github.com/conclave-labs/conclave.git
+cd conclave
 cargo build --release --locked
 cargo install --path . --force --locked
 
-zeroclaw onboard --api-key sk-... --provider openrouter
-zeroclaw onboard --interactive
+conclave onboard --api-key sk-... --provider openrouter
+conclave onboard --interactive
 
-zeroclaw agent -m "Hello, ZeroClaw!"
+conclave agent -m "Hello, Conclave!"
 
 # default: 127.0.0.1:3000
-zeroclaw gateway
+conclave gateway
 
-zeroclaw daemon
+conclave daemon
 ```
 
 ## Важные security-дефолты

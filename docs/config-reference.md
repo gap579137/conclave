@@ -1,4 +1,4 @@
-# ZeroClaw Config Reference (Operator-Oriented)
+# Conclave Config Reference (Operator-Oriented)
 
 This is a high-signal reference for common config sections and defaults.
 
@@ -6,7 +6,7 @@ Last verified: **February 18, 2026**.
 
 Config file path:
 
-- `~/.zeroclaw/config.toml`
+- `~/.conclave/config.toml`
 
 ## Core Keys
 
@@ -70,9 +70,9 @@ See detailed channel matrix and allowlist behavior in [channels-reference.md](ch
 After editing config:
 
 ```bash
-zeroclaw status
-zeroclaw doctor
-zeroclaw channel doctor
+conclave status
+conclave doctor
+conclave channel doctor
 ```
 
 ## Related Docs

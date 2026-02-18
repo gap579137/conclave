@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="zeroclaw.png" alt="ZeroClaw" width="200" />
+  <img src="conclave.png" alt="Conclave" width="200" />
 </p>
 
-<h1 align="center">ZeroClaw 🦀（日本語）</h1>
+<h1 align="center">Conclave 🦀（日本語）</h1>
 
 <p align="center">
   <strong>Zero overhead. Zero compromise. 100% Rust. 100% Agnostic.</strong>
@@ -37,24 +37,24 @@
 
 ## 概要
 
-ZeroClaw は、高速・省リソース・高拡張性を重視した自律エージェント実行基盤です。
+Conclave は、高速・省リソース・高拡張性を重視した自律エージェント実行基盤です。
 
 - Rust ネイティブ実装、単一バイナリで配布可能
 - Trait ベース設計（`Provider` / `Channel` / `Tool` / `Memory` など）
 - セキュアデフォルト（ペアリング、明示 allowlist、サンドボックス、スコープ制御）
 
-## ZeroClaw が選ばれる理由
+## Conclave が選ばれる理由
 
 - **軽量ランタイムを標準化**: CLI や `status` などの常用操作は数MB級メモリで動作。
 - **低コスト環境に適合**: 低価格ボードや小規模クラウドでも、重い実行基盤なしで運用可能。
 - **高速コールドスタート**: Rust 単一バイナリにより、主要コマンドと daemon 起動が非常に速い。
 - **高い移植性**: ARM / x86 / RISC-V を同じ運用モデルで扱え、provider/channel/tool を差し替え可能。
 
-## ベンチマークスナップショット（ZeroClaw vs OpenClaw、再現可能）
+## ベンチマークスナップショット（Conclave vs OpenClaw、再現可能）
 
 以下はローカルのクイック比較（macOS arm64、2026年2月）を、0.8GHz エッジ CPU 基準で正規化したものです。
 
-| | OpenClaw | NanoBot | PicoClaw | ZeroClaw 🦀 |
+| | OpenClaw | NanoBot | PicoClaw | Conclave 🦀 |
 |---|---|---|---|---|
 | **言語** | TypeScript | Python | Go | **Rust** |
 | **RAM** | > 1GB | > 100MB | < 10MB | **< 5MB** |
@@ -62,10 +62,10 @@ ZeroClaw は、高速・省リソース・高拡張性を重視した自律エ�
 | **バイナリサイズ** | ~28MB（dist） | N/A（スクリプト） | ~8MB | **3.4 MB** |
 | **コスト** | Mac Mini $599 | Linux SBC ~$50 | Linux ボード $10 | **任意の $10 ハードウェア** |
 
-> 注記: ZeroClaw の結果は release ビルドを `/usr/bin/time -l` で計測したものです。OpenClaw は Node.js ランタイムが必要で、ランタイム由来だけで通常は約390MBの追加メモリを要します。NanoBot は Python ランタイムが必要です。PicoClaw と ZeroClaw は静的バイナリです。
+> 注記: Conclave の結果は release ビルドを `/usr/bin/time -l` で計測したものです。OpenClaw は Node.js ランタイムが必要で、ランタイム由来だけで通常は約390MBの追加メモリを要します。NanoBot は Python ランタイムが必要です。PicoClaw と Conclave は静的バイナリです。
 
 <p align="center">
-  <img src="zero-claw.jpeg" alt="ZeroClaw vs OpenClaw Comparison" width="800" />
+  <img src="zero-claw.jpeg" alt="Conclave vs OpenClaw Comparison" width="800" />
 </p>
 
 ### ローカルで再現可能な測定
@@ -74,23 +74,23 @@ ZeroClaw は、高速・省リソース・高拡張性を重視した自律エ�
 
 ```bash
 cargo build --release
-ls -lh target/release/zeroclaw
+ls -lh target/release/conclave
 
-/usr/bin/time -l target/release/zeroclaw --help
-/usr/bin/time -l target/release/zeroclaw status
+/usr/bin/time -l target/release/conclave --help
+/usr/bin/time -l target/release/conclave status
 ```
 
 README のサンプル値（macOS arm64, 2026-02-18）:
 
 - Release バイナリ: `8.8M`
-- `zeroclaw --help`: 約 `0.02s`、ピークメモリ 約 `3.9MB`
-- `zeroclaw status`: 約 `0.01s`、ピークメモリ 約 `4.1MB`
+- `conclave --help`: 約 `0.02s`、ピークメモリ 約 `3.9MB`
+- `conclave status`: 約 `0.01s`、ピークメモリ 約 `4.1MB`
 
 ## ワンクリック導入
 
 ```bash
-git clone https://github.com/zeroclaw-labs/zeroclaw.git
-cd zeroclaw
+git clone https://github.com/conclave-labs/conclave.git
+cd conclave
 ./bootstrap.sh
 ```
 
@@ -101,20 +101,20 @@ cd zeroclaw
 ## クイックスタート
 
 ```bash
-git clone https://github.com/zeroclaw-labs/zeroclaw.git
-cd zeroclaw
+git clone https://github.com/conclave-labs/conclave.git
+cd conclave
 cargo build --release --locked
 cargo install --path . --force --locked
 
-zeroclaw onboard --api-key sk-... --provider openrouter
-zeroclaw onboard --interactive
+conclave onboard --api-key sk-... --provider openrouter
+conclave onboard --interactive
 
-zeroclaw agent -m "Hello, ZeroClaw!"
+conclave agent -m "Hello, Conclave!"
 
 # default: 127.0.0.1:3000
-zeroclaw gateway
+conclave gateway
 
-zeroclaw daemon
+conclave daemon
 ```
 
 ## セキュリティのデフォルト

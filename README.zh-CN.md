@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="zeroclaw.png" alt="ZeroClaw" width="200" />
+  <img src="conclave.png" alt="Conclave" width="200" />
 </p>
 
-<h1 align="center">ZeroClaw 🦀（简体中文）</h1>
+<h1 align="center">Conclave 🦀（简体中文）</h1>
 
 <p align="center">
   <strong>零开销、零妥协；随处部署、万物可换。</strong>
@@ -37,24 +37,24 @@
 
 ## 项目简介
 
-ZeroClaw 是一个高性能、低资源占用、可组合的自主智能体运行时：
+Conclave 是一个高性能、低资源占用、可组合的自主智能体运行时：
 
 - Rust 原生实现，单二进制部署，跨 ARM / x86 / RISC-V。
 - Trait 驱动架构，`Provider` / `Channel` / `Tool` / `Memory` 可替换。
 - 安全默认值优先：配对鉴权、显式 allowlist、沙箱与作用域约束。
 
-## 为什么选择 ZeroClaw
+## 为什么选择 Conclave
 
 - **默认轻量运行时**：常见 CLI 与 `status` 工作流通常保持在几 MB 级内存范围。
 - **低成本部署友好**：面向低价板卡与小规格云主机设计，不依赖厚重运行时。
 - **冷启动很快**：Rust 单二进制让常用命令与守护进程启动更接近“秒开”。
 - **跨架构可移植**：同一套二进制优先流程覆盖 ARM / x86 / RISC-V，并保持 provider/channel/tool 可替换。
 
-## 基准快照（ZeroClaw vs OpenClaw，可复现）
+## 基准快照（Conclave vs OpenClaw，可复现）
 
 以下是本地快速基准对比（macOS arm64，2026 年 2 月），按 0.8GHz 边缘 CPU 进行归一化展示：
 
-| | OpenClaw | NanoBot | PicoClaw | ZeroClaw 🦀 |
+| | OpenClaw | NanoBot | PicoClaw | Conclave 🦀 |
 |---|---|---|---|---|
 | **语言** | TypeScript | Python | Go | **Rust** |
 | **RAM** | > 1GB | > 100MB | < 10MB | **< 5MB** |
@@ -62,10 +62,10 @@ ZeroClaw 是一个高性能、低资源占用、可组合的自主智能体运�
 | **二进制体积** | ~28MB（dist） | N/A（脚本） | ~8MB | **3.4 MB** |
 | **成本** | Mac Mini $599 | Linux SBC ~$50 | Linux 板卡 $10 | **任意 $10 硬件** |
 
-> 说明：ZeroClaw 的数据来自 release 构建，并通过 `/usr/bin/time -l` 测得。OpenClaw 需要 Node.js 运行时环境，仅该运行时通常就会带来约 390MB 的额外内存占用；NanoBot 需要 Python 运行时环境。PicoClaw 与 ZeroClaw 为静态二进制。
+> 说明：Conclave 的数据来自 release 构建，并通过 `/usr/bin/time -l` 测得。OpenClaw 需要 Node.js 运行时环境，仅该运行时通常就会带来约 390MB 的额外内存占用；NanoBot 需要 Python 运行时环境。PicoClaw 与 Conclave 为静态二进制。
 
 <p align="center">
-  <img src="zero-claw.jpeg" alt="ZeroClaw vs OpenClaw 对比图" width="800" />
+  <img src="zero-claw.jpeg" alt="Conclave vs OpenClaw 对比图" width="800" />
 </p>
 
 ### 本地可复现测量
@@ -74,23 +74,23 @@ ZeroClaw 是一个高性能、低资源占用、可组合的自主智能体运�
 
 ```bash
 cargo build --release
-ls -lh target/release/zeroclaw
+ls -lh target/release/conclave
 
-/usr/bin/time -l target/release/zeroclaw --help
-/usr/bin/time -l target/release/zeroclaw status
+/usr/bin/time -l target/release/conclave --help
+/usr/bin/time -l target/release/conclave status
 ```
 
 当前 README 的样例数据（macOS arm64，2026-02-18）：
 
 - Release 二进制：`8.8M`
-- `zeroclaw --help`：约 `0.02s`，峰值内存约 `3.9MB`
-- `zeroclaw status`：约 `0.01s`，峰值内存约 `4.1MB`
+- `conclave --help`：约 `0.02s`，峰值内存约 `3.9MB`
+- `conclave status`：约 `0.01s`，峰值内存约 `4.1MB`
 
 ## 一键部署
 
 ```bash
-git clone https://github.com/zeroclaw-labs/zeroclaw.git
-cd zeroclaw
+git clone https://github.com/conclave-labs/conclave.git
+cd conclave
 ./bootstrap.sh
 ```
 
@@ -101,25 +101,25 @@ cd zeroclaw
 ## 快速开始
 
 ```bash
-git clone https://github.com/zeroclaw-labs/zeroclaw.git
-cd zeroclaw
+git clone https://github.com/conclave-labs/conclave.git
+cd conclave
 cargo build --release --locked
 cargo install --path . --force --locked
 
 # 快速初始化（无交互）
-zeroclaw onboard --api-key sk-... --provider openrouter
+conclave onboard --api-key sk-... --provider openrouter
 
 # 或使用交互式向导
-zeroclaw onboard --interactive
+conclave onboard --interactive
 
 # 单次对话
-zeroclaw agent -m "Hello, ZeroClaw!"
+conclave agent -m "Hello, Conclave!"
 
 # 启动网关（默认: 127.0.0.1:3000）
-zeroclaw gateway
+conclave gateway
 
 # 启动长期运行模式
-zeroclaw daemon
+conclave daemon
 ```
 
 ## 安全默认行为（关键）

@@ -1,5 +1,5 @@
-# ZeroClaw Robot Kit Configuration
-# Copy to ~/.zeroclaw/robot.toml
+# Conclave Robot Kit Configuration
+# Copy to ~/.conclave/robot.toml
 
 # =============================================================================
 # DRIVE SYSTEM

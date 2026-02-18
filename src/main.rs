@@ -44,7 +44,7 @@ mod approval;
 mod auth;
 mod channels;
 mod rag {
-    pub use zeroclaw::rag::*;
+    pub use conclave::rag::*;
 }
 mod config;
 mod cron;
@@ -74,11 +74,11 @@ mod util;
 use config::Config;
 
 // Re-export so binary's hardware/peripherals modules can use crate::HardwareCommands etc.
-pub use zeroclaw::{HardwareCommands, PeripheralCommands};
+pub use conclave::{HardwareCommands, PeripheralCommands};
 
-/// `ZeroClaw` - Zero overhead. Zero compromise. 100% Rust.
+/// `Conclave` - Zero overhead. Zero compromise. 100% Rust.
 #[derive(Parser, Debug)]
-#[command(name = "zeroclaw")]
+#[command(name = "conclave")]
 #[command(author = "theonlyhennygod")]
 #[command(version = "0.1.0")]
 #[command(about = "The fastest, smallest AI assistant.", long_about = None)]
@@ -234,13 +234,13 @@ enum Commands {
     /// Discover and introspect USB hardware
     Hardware {
         #[command(subcommand)]
-        hardware_command: zeroclaw::HardwareCommands,
+        hardware_command: conclave::HardwareCommands,
     },
 
     /// Manage hardware peripherals (STM32, RPi GPIO, etc.)
     Peripheral {
         #[command(subcommand)]
-        peripheral_command: zeroclaw::PeripheralCommands,
+        peripheral_command: conclave::PeripheralCommands,
     },
 }
 
@@ -257,6 +257,9 @@ enum AuthCommands {
         /// Use OAuth device-code flow
         #[arg(long)]
         device_code: bool,
+        /// Headless mode: skip loopback listener and prompt for callback URL paste
+        #[arg(long)]
+        headless: bool,
     },
     /// Complete OAuth by pasting redirect URL or auth code
     PasteRedirect {
@@ -329,7 +332,7 @@ enum AuthCommands {
 
 #[derive(Subcommand, Debug)]
 enum MigrateCommands {
-    /// Import memory from an `OpenClaw` workspace into this `ZeroClaw` workspace
+    /// Import memory from an `OpenClaw` workspace into this `Conclave` workspace
     Openclaw {
         /// Optional path to `OpenClaw` workspace (defaults to ~/.openclaw/workspace)
         #[arg(long)]
@@ -530,7 +533,7 @@ async fn main() -> Result<()> {
         })
         .await??;
         // Auto-start channels if user said yes during wizard
-        if std::env::var("ZEROCLAW_AUTOSTART_CHANNELS").as_deref() == Ok("1") {
+        if std::env::var("CONCLAVE_AUTOSTART_CHANNELS").as_deref() == Ok("1") {
             channels::start_channels(config).await?;
         }
         return Ok(());
@@ -557,9 +560,9 @@ async fn main() -> Result<()> {
             let port = port.unwrap_or(config.gateway.port);
             let host = host.unwrap_or_else(|| config.gateway.host.clone());
             if port == 0 {
-                info!("🚀 Starting ZeroClaw Gateway on {host} (random port)");
+                info!("🚀 Starting Conclave Gateway on {host} (random port)");
             } else {
-                info!("🚀 Starting ZeroClaw Gateway on {host}:{port}");
+                info!("🚀 Starting Conclave Gateway on {host}:{port}");
             }
             gateway::run_gateway(&host, port, config).await
         }
@@ -568,15 +571,15 @@ async fn main() -> Result<()> {
             let port = port.unwrap_or(config.gateway.port);
             let host = host.unwrap_or_else(|| config.gateway.host.clone());
             if port == 0 {
-                info!("🧠 Starting ZeroClaw Daemon on {host} (random port)");
+                info!("🧠 Starting Conclave Daemon on {host} (random port)");
             } else {
-                info!("🧠 Starting ZeroClaw Daemon on {host}:{port}");
+                info!("🧠 Starting Conclave Daemon on {host}:{port}");
             }
             daemon::run(config, host, port).await
         }
 
         Commands::Status => {
-            println!("🦀 ZeroClaw Status");
+            println!("🦀 Conclave Status");
             println!();
             println!("Version:     {}", env!("CARGO_PKG_VERSION"));
             println!("Workspace:   {}", config.workspace_dir.display());
@@ -869,6 +872,25 @@ fn read_plain_input(prompt: &str) -> Result<String> {
     Ok(input.trim().to_string())
 }
 
+/// Prompt user to select their environment type for OAuth flow.
+/// Returns true if headless (no browser redirect capture), false if desktop.
+fn prompt_environment_type() -> Result<bool> {
+    use dialoguer::Select;
+
+    let options = &[
+        "Desktop (browser can redirect to localhost)",
+        "Headless / SSH (I will paste the callback URL manually)",
+    ];
+
+    let selection = Select::new()
+        .with_prompt("What environment are you running in?")
+        .items(options)
+        .default(0)
+        .interact()?;
+
+    Ok(selection == 1)
+}
+
 fn extract_openai_account_id_for_profile(access_token: &str) -> Option<String> {
     let account_id = auth::openai_oauth::extract_account_id_from_jwt(access_token);
     if account_id.is_none() {
@@ -908,6 +930,7 @@ async fn handle_auth_command(auth_command: AuthCommands, config: &Config) -> Res
             provider,
             profile,
             device_code,
+            headless,
         } => {
             let provider = auth::normalize_provider(&provider)?;
             if provider != "openai-codex" {
@@ -963,21 +986,52 @@ async fn handle_auth_command(auth_command: AuthCommands, config: &Config) -> Res
             println!("Open this URL in your browser and authorize access:");
             println!("{authorize_url}");
             println!();
-            println!("Waiting for callback at http://localhost:1455/auth/callback ...");
 
-            let code = match auth::openai_oauth::receive_loopback_code(
-                &pkce.state,
-                std::time::Duration::from_secs(180),
-            )
-            .await
-            {
-                Ok(code) => code,
-                Err(e) => {
-                    println!("Callback capture failed: {e}");
-                    println!(
-                            "Run `zeroclaw auth paste-redirect --provider openai-codex --profile {profile}`"
+            // Determine OAuth callback method based on --headless flag or interactive prompt
+            let is_headless = if headless {
+                true
+            } else {
+                prompt_environment_type()?
+            };
+
+            let code = if is_headless {
+                // Headless mode: user must paste the callback URL manually
+                println!();
+                println!(
+                    "After authorizing in your browser, you will be redirected to a URL like:"
+                );
+                println!("  http://localhost:1455/auth/callback?code=...&state=...");
+                println!();
+                println!("Copy that entire URL and paste it below:");
+
+                let redirect_input = read_plain_input("Callback URL")?;
+                auth::openai_oauth::parse_code_from_redirect(&redirect_input, Some(&pkce.state))?
+            } else {
+                // Desktop mode: try automatic loopback capture
+                println!("Waiting for callback at http://localhost:1455/auth/callback ...");
+
+                match auth::openai_oauth::receive_loopback_code(
+                    &pkce.state,
+                    std::time::Duration::from_secs(180),
+                )
+                .await
+                {
+                    Ok(code) => code,
+                    Err(e) => {
+                        println!("Callback capture failed: {e}");
+                        println!();
+                        println!("You can paste the callback URL manually instead.");
+                        println!(
+                            "After authorizing, copy the URL from your browser's address bar:"
                         );
-                    return Ok(());
+
+                        let redirect_input =
+                            read_plain_input("Callback URL (or press Ctrl+C to cancel)")?;
+                        auth::openai_oauth::parse_code_from_redirect(
+                            &redirect_input,
+                            Some(&pkce.state),
+                        )?
+                    }
                 }
             };
 
@@ -1005,7 +1059,7 @@ async fn handle_auth_command(auth_command: AuthCommands, config: &Config) -> Res
 
             let pending = load_pending_openai_login(config)?.ok_or_else(|| {
                 anyhow::anyhow!(
-                    "No pending OpenAI login found. Run `zeroclaw auth login --provider openai-codex` first."
+                    "No pending OpenAI login found. Run `conclave auth login --provider openai-codex` first."
                 )
             })?;
 
@@ -1112,7 +1166,7 @@ async fn handle_auth_command(auth_command: AuthCommands, config: &Config) -> Res
                 }
                 None => {
                     bail!(
-                        "No OpenAI Codex auth profile found. Run `zeroclaw auth login --provider openai-codex`."
+                        "No OpenAI Codex auth profile found. Run `conclave auth login --provider openai-codex`."
                     )
                 }
             }

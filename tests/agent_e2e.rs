@@ -5,20 +5,20 @@
 //! external service dependencies. They complement the unit tests in
 //! `src/agent/tests.rs` by running at the integration test boundary.
 //!
-//! Ref: https://github.com/zeroclaw-labs/zeroclaw/issues/618 (item 6)
+//! Ref: https://github.com/conclave-labs/conclave/issues/618 (item 6)
 
 use anyhow::Result;
 use async_trait::async_trait;
+use conclave::agent::agent::Agent;
+use conclave::agent::dispatcher::{NativeToolDispatcher, XmlToolDispatcher};
+use conclave::config::MemoryConfig;
+use conclave::memory;
+use conclave::memory::Memory;
+use conclave::observability::{NoopObserver, Observer};
+use conclave::providers::{ChatRequest, ChatResponse, Provider, ToolCall};
+use conclave::tools::{Tool, ToolResult};
 use serde_json::json;
 use std::sync::{Arc, Mutex};
-use zeroclaw::agent::agent::Agent;
-use zeroclaw::agent::dispatcher::{NativeToolDispatcher, XmlToolDispatcher};
-use zeroclaw::config::MemoryConfig;
-use zeroclaw::memory;
-use zeroclaw::memory::Memory;
-use zeroclaw::observability::{NoopObserver, Observer};
-use zeroclaw::providers::{ChatRequest, ChatResponse, Provider, ToolCall};
-use zeroclaw::tools::{Tool, ToolResult};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Mock infrastructure

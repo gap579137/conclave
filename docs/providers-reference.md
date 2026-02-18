@@ -1,4 +1,4 @@
-# ZeroClaw Providers Reference
+# Conclave Providers Reference
 
 This document maps provider IDs, aliases, and credential environment variables.
 
@@ -7,7 +7,7 @@ Last verified: **February 18, 2026**.
 ## How to List Providers
 
 ```bash
-zeroclaw providers
+conclave providers
 ```
 
 ## Credential Resolution Order
@@ -16,7 +16,7 @@ Runtime resolution order is:
 
 1. Explicit credential from config/CLI
 2. Provider-specific env var(s)
-3. Generic fallback env vars: `ZEROCLAW_API_KEY` then `API_KEY`
+3. Generic fallback env vars: `CONCLAVE_API_KEY` then `API_KEY`
 
 ## Provider Catalog
 

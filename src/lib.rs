@@ -133,7 +133,7 @@ pub enum SkillCommands {
 /// Migration subcommands
 #[derive(Subcommand, Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
 pub enum MigrateCommands {
-    /// Import memory from an `OpenClaw` workspace into this `ZeroClaw` workspace
+    /// Import memory from an `OpenClaw` workspace into this `Conclave` workspace
     Openclaw {
         /// Optional path to `OpenClaw` workspace (defaults to ~/.openclaw/workspace)
         #[arg(long)]
@@ -238,7 +238,7 @@ pub enum PeripheralCommands {
         /// Path for serial transport (/dev/ttyACM0) or "native" for local GPIO
         path: String,
     },
-    /// Flash ZeroClaw firmware to Arduino (creates .ino, installs arduino-cli if needed, uploads)
+    /// Flash Conclave firmware to Arduino (creates .ino, installs arduino-cli if needed, uploads)
     Flash {
         /// Serial port (e.g. /dev/cu.usbmodem12345). If omitted, uses first arduino-uno from config.
         #[arg(short, long)]
@@ -250,6 +250,6 @@ pub enum PeripheralCommands {
         #[arg(long)]
         host: Option<String>,
     },
-    /// Flash ZeroClaw firmware to Nucleo-F401RE (builds + probe-rs run)
+    /// Flash Conclave firmware to Nucleo-F401RE (builds + probe-rs run)
     FlashNucleo,
 }

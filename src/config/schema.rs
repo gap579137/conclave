@@ -817,7 +817,7 @@ impl Default for WebSearchConfig {
 pub enum ProxyScope {
     Environment,
     #[default]
-    Zeroclaw,
+    Conclave,
     Services,
 }
 
@@ -854,7 +854,7 @@ impl Default for ProxyConfig {
             https_proxy: None,
             all_proxy: None,
             no_proxy: Vec::new(),
-            scope: ProxyScope::Zeroclaw,
+            scope: ProxyScope::Conclave,
             services: Vec::new(),
         }
     }
@@ -927,7 +927,7 @@ impl ProxyConfig {
 
         match self.scope {
             ProxyScope::Environment => false,
-            ProxyScope::Zeroclaw => true,
+            ProxyScope::Conclave => true,
             ProxyScope::Services => {
                 let service_key = service_key.trim().to_ascii_lowercase();
                 if service_key.is_empty() {
@@ -1256,7 +1256,7 @@ pub fn build_runtime_proxy_client_with_timeouts(
 fn parse_proxy_scope(raw: &str) -> Option<ProxyScope> {
     match raw.trim().to_ascii_lowercase().as_str() {
         "environment" | "env" => Some(ProxyScope::Environment),
-        "zeroclaw" | "internal" | "core" => Some(ProxyScope::Zeroclaw),
+        "conclave" | "internal" | "core" => Some(ProxyScope::Conclave),
         "services" | "service" => Some(ProxyScope::Services),
         _ => None,
     }
@@ -1491,7 +1491,7 @@ pub struct ObservabilityConfig {
     #[serde(default)]
     pub otel_endpoint: Option<String>,
 
-    /// Service name reported to the OTel collector. Defaults to "zeroclaw".
+    /// Service name reported to the OTel collector. Defaults to "conclave".
     #[serde(default)]
     pub otel_service_name: Option<String>,
 }
@@ -2131,7 +2131,7 @@ pub struct WhatsAppConfig {
     /// Webhook verify token (you define this, Meta sends it back for verification)
     pub verify_token: String,
     /// App secret from Meta Business Suite (for webhook signature verification)
-    /// Can also be set via `ZEROCLAW_WHATSAPP_APP_SECRET` environment variable
+    /// Can also be set via `CONCLAVE_WHATSAPP_APP_SECRET` environment variable
     #[serde(default)]
     pub app_secret: Option<String>,
     /// Allowed phone numbers (E.164 format: +1234567890) or "*" for all
@@ -2170,7 +2170,7 @@ fn default_irc_port() -> u16 {
     6697
 }
 
-/// How ZeroClaw receives events from Feishu / Lark.
+/// How Conclave receives events from Feishu / Lark.
 ///
 /// - `websocket` (default) — persistent WSS long-connection; no public URL required.
 /// - `webhook`             — HTTP callback server; requires a public HTTPS endpoint.
@@ -2328,7 +2328,7 @@ pub struct AuditConfig {
     #[serde(default = "default_audit_enabled")]
     pub enabled: bool,
 
-    /// Path to audit log file (relative to zeroclaw dir)
+    /// Path to audit log file (relative to conclave dir)
     #[serde(default = "default_audit_log_path")]
     pub log_path: String,
 
@@ -2394,11 +2394,11 @@ impl Default for Config {
     fn default() -> Self {
         let home =
             UserDirs::new().map_or_else(|| PathBuf::from("."), |u| u.home_dir().to_path_buf());
-        let zeroclaw_dir = home.join(".zeroclaw");
+        let conclave_dir = home.join(".conclave");
 
         Self {
-            workspace_dir: zeroclaw_dir.join("workspace"),
-            config_path: zeroclaw_dir.join("config.toml"),
+            workspace_dir: conclave_dir.join("workspace"),
+            config_path: conclave_dir.join("config.toml"),
             api_key: None,
             api_url: None,
             default_provider: Some("openrouter".to_string()),
@@ -2450,7 +2450,7 @@ fn default_config_dir() -> Result<PathBuf> {
     let home = UserDirs::new()
         .map(|u| u.home_dir().to_path_buf())
         .context("Could not find home directory")?;
-    Ok(home.join(".zeroclaw"))
+    Ok(home.join(".conclave"))
 }
 
 fn active_workspace_state_path(default_dir: &Path) -> PathBuf {
@@ -2566,7 +2566,7 @@ fn resolve_config_dir_for_workspace(workspace_dir: &Path) -> (PathBuf, PathBuf) 
 
     let legacy_config_dir = workspace_dir
         .parent()
-        .map(|parent| parent.join(".zeroclaw"));
+        .map(|parent| parent.join(".conclave"));
     if let Some(legacy_dir) = legacy_config_dir {
         if legacy_dir.join("config.toml").exists() {
             return (legacy_dir, workspace_config_dir);
@@ -2622,23 +2622,23 @@ fn encrypt_optional_secret(
 
 impl Config {
     pub fn load_or_init() -> Result<Self> {
-        let (default_zeroclaw_dir, default_workspace_dir) = default_config_and_workspace_dirs()?;
+        let (default_conclave_dir, default_workspace_dir) = default_config_and_workspace_dirs()?;
 
         // Resolution priority:
-        // 1. ZEROCLAW_WORKSPACE env override
+        // 1. CONCLAVE_WORKSPACE env override
         // 2. Persisted active workspace marker from onboarding/custom profile
-        // 3. Default ~/.zeroclaw layout
-        let (zeroclaw_dir, workspace_dir) = match std::env::var("ZEROCLAW_WORKSPACE") {
+        // 3. Default ~/.conclave layout
+        let (conclave_dir, workspace_dir) = match std::env::var("CONCLAVE_WORKSPACE") {
             Ok(custom_workspace) if !custom_workspace.is_empty() => {
                 resolve_config_dir_for_workspace(&PathBuf::from(custom_workspace))
             }
-            _ => load_persisted_workspace_dirs(&default_zeroclaw_dir)?
-                .unwrap_or((default_zeroclaw_dir, default_workspace_dir)),
+            _ => load_persisted_workspace_dirs(&default_conclave_dir)?
+                .unwrap_or((default_conclave_dir, default_workspace_dir)),
         };
 
-        let config_path = zeroclaw_dir.join("config.toml");
+        let config_path = conclave_dir.join("config.toml");
 
-        fs::create_dir_all(&zeroclaw_dir).context("Failed to create config directory")?;
+        fs::create_dir_all(&conclave_dir).context("Failed to create config directory")?;
         fs::create_dir_all(&workspace_dir).context("Failed to create workspace directory")?;
 
         if config_path.exists() {
@@ -2666,7 +2666,7 @@ impl Config {
             // Set computed paths that are skipped during serialization
             config.config_path = config_path.clone();
             config.workspace_dir = workspace_dir;
-            let store = crate::security::SecretStore::new(&zeroclaw_dir, config.secrets.encrypt);
+            let store = crate::security::SecretStore::new(&conclave_dir, config.secrets.encrypt);
             decrypt_optional_secret(&store, &mut config.api_key, "config.api_key")?;
             decrypt_optional_secret(
                 &store,
@@ -2717,8 +2717,8 @@ impl Config {
 
     /// Apply environment variable overrides to config
     pub fn apply_env_overrides(&mut self) {
-        // API Key: ZEROCLAW_API_KEY or API_KEY (generic)
-        if let Ok(key) = std::env::var("ZEROCLAW_API_KEY").or_else(|_| std::env::var("API_KEY")) {
+        // API Key: CONCLAVE_API_KEY or API_KEY (generic)
+        if let Ok(key) = std::env::var("CONCLAVE_API_KEY").or_else(|_| std::env::var("API_KEY")) {
             if !key.is_empty() {
                 self.api_key = Some(key);
             }
@@ -2741,24 +2741,24 @@ impl Config {
             }
         }
 
-        // Provider: ZEROCLAW_PROVIDER or PROVIDER
+        // Provider: CONCLAVE_PROVIDER or PROVIDER
         if let Ok(provider) =
-            std::env::var("ZEROCLAW_PROVIDER").or_else(|_| std::env::var("PROVIDER"))
+            std::env::var("CONCLAVE_PROVIDER").or_else(|_| std::env::var("PROVIDER"))
         {
             if !provider.is_empty() {
                 self.default_provider = Some(provider);
             }
         }
 
-        // Model: ZEROCLAW_MODEL or MODEL
-        if let Ok(model) = std::env::var("ZEROCLAW_MODEL").or_else(|_| std::env::var("MODEL")) {
+        // Model: CONCLAVE_MODEL or MODEL
+        if let Ok(model) = std::env::var("CONCLAVE_MODEL").or_else(|_| std::env::var("MODEL")) {
             if !model.is_empty() {
                 self.default_model = Some(model);
             }
         }
 
-        // Workspace directory: ZEROCLAW_WORKSPACE
-        if let Ok(workspace) = std::env::var("ZEROCLAW_WORKSPACE") {
+        // Workspace directory: CONCLAVE_WORKSPACE
+        if let Ok(workspace) = std::env::var("CONCLAVE_WORKSPACE") {
             if !workspace.is_empty() {
                 let (_, workspace_dir) =
                     resolve_config_dir_for_workspace(&PathBuf::from(workspace));
@@ -2766,30 +2766,30 @@ impl Config {
             }
         }
 
-        // Gateway port: ZEROCLAW_GATEWAY_PORT or PORT
+        // Gateway port: CONCLAVE_GATEWAY_PORT or PORT
         if let Ok(port_str) =
-            std::env::var("ZEROCLAW_GATEWAY_PORT").or_else(|_| std::env::var("PORT"))
+            std::env::var("CONCLAVE_GATEWAY_PORT").or_else(|_| std::env::var("PORT"))
         {
             if let Ok(port) = port_str.parse::<u16>() {
                 self.gateway.port = port;
             }
         }
 
-        // Gateway host: ZEROCLAW_GATEWAY_HOST or HOST
-        if let Ok(host) = std::env::var("ZEROCLAW_GATEWAY_HOST").or_else(|_| std::env::var("HOST"))
+        // Gateway host: CONCLAVE_GATEWAY_HOST or HOST
+        if let Ok(host) = std::env::var("CONCLAVE_GATEWAY_HOST").or_else(|_| std::env::var("HOST"))
         {
             if !host.is_empty() {
                 self.gateway.host = host;
             }
         }
 
-        // Allow public bind: ZEROCLAW_ALLOW_PUBLIC_BIND
-        if let Ok(val) = std::env::var("ZEROCLAW_ALLOW_PUBLIC_BIND") {
+        // Allow public bind: CONCLAVE_ALLOW_PUBLIC_BIND
+        if let Ok(val) = std::env::var("CONCLAVE_ALLOW_PUBLIC_BIND") {
             self.gateway.allow_public_bind = val == "1" || val.eq_ignore_ascii_case("true");
         }
 
-        // Temperature: ZEROCLAW_TEMPERATURE
-        if let Ok(temp_str) = std::env::var("ZEROCLAW_TEMPERATURE") {
+        // Temperature: CONCLAVE_TEMPERATURE
+        if let Ok(temp_str) = std::env::var("CONCLAVE_TEMPERATURE") {
             if let Ok(temp) = temp_str.parse::<f64>() {
                 if (0.0..=2.0).contains(&temp) {
                     self.default_temperature = temp;
@@ -2797,15 +2797,15 @@ impl Config {
             }
         }
 
-        // Web search enabled: ZEROCLAW_WEB_SEARCH_ENABLED or WEB_SEARCH_ENABLED
-        if let Ok(enabled) = std::env::var("ZEROCLAW_WEB_SEARCH_ENABLED")
+        // Web search enabled: CONCLAVE_WEB_SEARCH_ENABLED or WEB_SEARCH_ENABLED
+        if let Ok(enabled) = std::env::var("CONCLAVE_WEB_SEARCH_ENABLED")
             .or_else(|_| std::env::var("WEB_SEARCH_ENABLED"))
         {
             self.web_search.enabled = enabled == "1" || enabled.eq_ignore_ascii_case("true");
         }
 
-        // Web search provider: ZEROCLAW_WEB_SEARCH_PROVIDER or WEB_SEARCH_PROVIDER
-        if let Ok(provider) = std::env::var("ZEROCLAW_WEB_SEARCH_PROVIDER")
+        // Web search provider: CONCLAVE_WEB_SEARCH_PROVIDER or WEB_SEARCH_PROVIDER
+        if let Ok(provider) = std::env::var("CONCLAVE_WEB_SEARCH_PROVIDER")
             .or_else(|_| std::env::var("WEB_SEARCH_PROVIDER"))
         {
             let provider = provider.trim();
@@ -2814,9 +2814,9 @@ impl Config {
             }
         }
 
-        // Brave API key: ZEROCLAW_BRAVE_API_KEY or BRAVE_API_KEY
+        // Brave API key: CONCLAVE_BRAVE_API_KEY or BRAVE_API_KEY
         if let Ok(api_key) =
-            std::env::var("ZEROCLAW_BRAVE_API_KEY").or_else(|_| std::env::var("BRAVE_API_KEY"))
+            std::env::var("CONCLAVE_BRAVE_API_KEY").or_else(|_| std::env::var("BRAVE_API_KEY"))
         {
             let api_key = api_key.trim();
             if !api_key.is_empty() {
@@ -2824,8 +2824,8 @@ impl Config {
             }
         }
 
-        // Web search max results: ZEROCLAW_WEB_SEARCH_MAX_RESULTS or WEB_SEARCH_MAX_RESULTS
-        if let Ok(max_results) = std::env::var("ZEROCLAW_WEB_SEARCH_MAX_RESULTS")
+        // Web search max results: CONCLAVE_WEB_SEARCH_MAX_RESULTS or WEB_SEARCH_MAX_RESULTS
+        if let Ok(max_results) = std::env::var("CONCLAVE_WEB_SEARCH_MAX_RESULTS")
             .or_else(|_| std::env::var("WEB_SEARCH_MAX_RESULTS"))
         {
             if let Ok(max_results) = max_results.parse::<usize>() {
@@ -2835,8 +2835,8 @@ impl Config {
             }
         }
 
-        // Web search timeout: ZEROCLAW_WEB_SEARCH_TIMEOUT_SECS or WEB_SEARCH_TIMEOUT_SECS
-        if let Ok(timeout_secs) = std::env::var("ZEROCLAW_WEB_SEARCH_TIMEOUT_SECS")
+        // Web search timeout: CONCLAVE_WEB_SEARCH_TIMEOUT_SECS or WEB_SEARCH_TIMEOUT_SECS
+        if let Ok(timeout_secs) = std::env::var("CONCLAVE_WEB_SEARCH_TIMEOUT_SECS")
             .or_else(|_| std::env::var("WEB_SEARCH_TIMEOUT_SECS"))
         {
             if let Ok(timeout_secs) = timeout_secs.parse::<u64>() {
@@ -2846,32 +2846,32 @@ impl Config {
             }
         }
 
-        // Storage provider key (optional backend override): ZEROCLAW_STORAGE_PROVIDER
-        if let Ok(provider) = std::env::var("ZEROCLAW_STORAGE_PROVIDER") {
+        // Storage provider key (optional backend override): CONCLAVE_STORAGE_PROVIDER
+        if let Ok(provider) = std::env::var("CONCLAVE_STORAGE_PROVIDER") {
             let provider = provider.trim();
             if !provider.is_empty() {
                 self.storage.provider.config.provider = provider.to_string();
             }
         }
 
-        // Storage connection URL (for remote backends): ZEROCLAW_STORAGE_DB_URL
-        if let Ok(db_url) = std::env::var("ZEROCLAW_STORAGE_DB_URL") {
+        // Storage connection URL (for remote backends): CONCLAVE_STORAGE_DB_URL
+        if let Ok(db_url) = std::env::var("CONCLAVE_STORAGE_DB_URL") {
             let db_url = db_url.trim();
             if !db_url.is_empty() {
                 self.storage.provider.config.db_url = Some(db_url.to_string());
             }
         }
 
-        // Storage connect timeout: ZEROCLAW_STORAGE_CONNECT_TIMEOUT_SECS
-        if let Ok(timeout_secs) = std::env::var("ZEROCLAW_STORAGE_CONNECT_TIMEOUT_SECS") {
+        // Storage connect timeout: CONCLAVE_STORAGE_CONNECT_TIMEOUT_SECS
+        if let Ok(timeout_secs) = std::env::var("CONCLAVE_STORAGE_CONNECT_TIMEOUT_SECS") {
             if let Ok(timeout_secs) = timeout_secs.parse::<u64>() {
                 if timeout_secs > 0 {
                     self.storage.provider.config.connect_timeout_secs = Some(timeout_secs);
                 }
             }
         }
-        // Proxy enabled flag: ZEROCLAW_PROXY_ENABLED
-        let explicit_proxy_enabled = std::env::var("ZEROCLAW_PROXY_ENABLED")
+        // Proxy enabled flag: CONCLAVE_PROXY_ENABLED
+        let explicit_proxy_enabled = std::env::var("CONCLAVE_PROXY_ENABLED")
             .ok()
             .as_deref()
             .and_then(parse_proxy_enabled);
@@ -2879,28 +2879,28 @@ impl Config {
             self.proxy.enabled = enabled;
         }
 
-        // Proxy URLs: ZEROCLAW_* wins, then generic *PROXY vars.
+        // Proxy URLs: CONCLAVE_* wins, then generic *PROXY vars.
         let mut proxy_url_overridden = false;
         if let Ok(proxy_url) =
-            std::env::var("ZEROCLAW_HTTP_PROXY").or_else(|_| std::env::var("HTTP_PROXY"))
+            std::env::var("CONCLAVE_HTTP_PROXY").or_else(|_| std::env::var("HTTP_PROXY"))
         {
             self.proxy.http_proxy = normalize_proxy_url_option(Some(&proxy_url));
             proxy_url_overridden = true;
         }
         if let Ok(proxy_url) =
-            std::env::var("ZEROCLAW_HTTPS_PROXY").or_else(|_| std::env::var("HTTPS_PROXY"))
+            std::env::var("CONCLAVE_HTTPS_PROXY").or_else(|_| std::env::var("HTTPS_PROXY"))
         {
             self.proxy.https_proxy = normalize_proxy_url_option(Some(&proxy_url));
             proxy_url_overridden = true;
         }
         if let Ok(proxy_url) =
-            std::env::var("ZEROCLAW_ALL_PROXY").or_else(|_| std::env::var("ALL_PROXY"))
+            std::env::var("CONCLAVE_ALL_PROXY").or_else(|_| std::env::var("ALL_PROXY"))
         {
             self.proxy.all_proxy = normalize_proxy_url_option(Some(&proxy_url));
             proxy_url_overridden = true;
         }
         if let Ok(no_proxy) =
-            std::env::var("ZEROCLAW_NO_PROXY").or_else(|_| std::env::var("NO_PROXY"))
+            std::env::var("CONCLAVE_NO_PROXY").or_else(|_| std::env::var("NO_PROXY"))
         {
             self.proxy.no_proxy = normalize_no_proxy_list(vec![no_proxy]);
         }
@@ -2913,18 +2913,18 @@ impl Config {
         }
 
         // Proxy scope and service selectors.
-        if let Ok(scope_raw) = std::env::var("ZEROCLAW_PROXY_SCOPE") {
+        if let Ok(scope_raw) = std::env::var("CONCLAVE_PROXY_SCOPE") {
             if let Some(scope) = parse_proxy_scope(&scope_raw) {
                 self.proxy.scope = scope;
             } else {
                 tracing::warn!(
                     scope = %scope_raw,
-                    "Ignoring invalid ZEROCLAW_PROXY_SCOPE (valid: environment|zeroclaw|services)"
+                    "Ignoring invalid CONCLAVE_PROXY_SCOPE (valid: environment|conclave|services)"
                 );
             }
         }
 
-        if let Ok(services_raw) = std::env::var("ZEROCLAW_PROXY_SERVICES") {
+        if let Ok(services_raw) = std::env::var("CONCLAVE_PROXY_SERVICES") {
             self.proxy.services = normalize_service_list(vec![services_raw]);
         }
 
@@ -2943,11 +2943,11 @@ impl Config {
     pub fn save(&self) -> Result<()> {
         // Encrypt secrets before serialization
         let mut config_to_save = self.clone();
-        let zeroclaw_dir = self
+        let conclave_dir = self
             .config_path
             .parent()
             .context("Config path must have a parent directory")?;
-        let store = crate::security::SecretStore::new(zeroclaw_dir, self.secrets.encrypt);
+        let store = crate::security::SecretStore::new(conclave_dir, self.secrets.encrypt);
 
         encrypt_optional_secret(&store, &mut config_to_save.api_key, "config.api_key")?;
         encrypt_optional_secret(
@@ -3309,7 +3309,7 @@ default_temperature = 0.7
 
 [storage.provider.config]
 provider = "postgres"
-dbURL = "postgres://postgres:postgres@localhost:5432/zeroclaw"
+dbURL = "postgres://postgres:postgres@localhost:5432/conclave"
 schema = "public"
 table = "memories"
 connect_timeout_secs = 12
@@ -3319,7 +3319,7 @@ connect_timeout_secs = 12
         assert_eq!(parsed.storage.provider.config.provider, "postgres");
         assert_eq!(
             parsed.storage.provider.config.db_url.as_deref(),
-            Some("postgres://postgres:postgres@localhost:5432/zeroclaw")
+            Some("postgres://postgres:postgres@localhost:5432/conclave")
         );
         assert_eq!(parsed.storage.provider.config.schema, "public");
         assert_eq!(parsed.storage.provider.config.table, "memories");
@@ -3360,7 +3360,7 @@ tool_dispatcher = "xml"
 
     #[test]
     fn config_save_and_load_tmpdir() {
-        let dir = std::env::temp_dir().join("zeroclaw_test_config");
+        let dir = std::env::temp_dir().join("conclave_test_config");
         let _ = fs::remove_dir_all(&dir);
         fs::create_dir_all(&dir).unwrap();
 
@@ -3422,7 +3422,7 @@ tool_dispatcher = "xml"
     #[test]
     fn config_save_encrypts_nested_credentials() {
         let dir = std::env::temp_dir().join(format!(
-            "zeroclaw_test_nested_credentials_{}",
+            "conclave_test_nested_credentials_{}",
             uuid::Uuid::new_v4()
         ));
         fs::create_dir_all(&dir).unwrap();
@@ -3503,7 +3503,7 @@ tool_dispatcher = "xml"
     #[test]
     fn config_save_atomic_cleanup() {
         let dir =
-            std::env::temp_dir().join(format!("zeroclaw_test_config_{}", uuid::Uuid::new_v4()));
+            std::env::temp_dir().join(format!("conclave_test_config_{}", uuid::Uuid::new_v4()));
         fs::create_dir_all(&dir).unwrap();
 
         let config_path = dir.join("config.toml");
@@ -4216,13 +4216,13 @@ default_temperature = 0.7
 
     fn clear_proxy_env_test_vars() {
         for key in [
-            "ZEROCLAW_PROXY_ENABLED",
-            "ZEROCLAW_HTTP_PROXY",
-            "ZEROCLAW_HTTPS_PROXY",
-            "ZEROCLAW_ALL_PROXY",
-            "ZEROCLAW_NO_PROXY",
-            "ZEROCLAW_PROXY_SCOPE",
-            "ZEROCLAW_PROXY_SERVICES",
+            "CONCLAVE_PROXY_ENABLED",
+            "CONCLAVE_HTTP_PROXY",
+            "CONCLAVE_HTTPS_PROXY",
+            "CONCLAVE_ALL_PROXY",
+            "CONCLAVE_NO_PROXY",
+            "CONCLAVE_PROXY_SCOPE",
+            "CONCLAVE_PROXY_SERVICES",
             "HTTP_PROXY",
             "HTTPS_PROXY",
             "ALL_PROXY",
@@ -4242,11 +4242,11 @@ default_temperature = 0.7
         let mut config = Config::default();
         assert!(config.api_key.is_none());
 
-        std::env::set_var("ZEROCLAW_API_KEY", "sk-test-env-key");
+        std::env::set_var("CONCLAVE_API_KEY", "sk-test-env-key");
         config.apply_env_overrides();
         assert_eq!(config.api_key.as_deref(), Some("sk-test-env-key"));
 
-        std::env::remove_var("ZEROCLAW_API_KEY");
+        std::env::remove_var("CONCLAVE_API_KEY");
     }
 
     #[test]
@@ -4254,7 +4254,7 @@ default_temperature = 0.7
         let _env_guard = env_override_test_guard();
         let mut config = Config::default();
 
-        std::env::remove_var("ZEROCLAW_API_KEY");
+        std::env::remove_var("CONCLAVE_API_KEY");
         std::env::set_var("API_KEY", "sk-fallback-key");
         config.apply_env_overrides();
         assert_eq!(config.api_key.as_deref(), Some("sk-fallback-key"));
@@ -4267,11 +4267,11 @@ default_temperature = 0.7
         let _env_guard = env_override_test_guard();
         let mut config = Config::default();
 
-        std::env::set_var("ZEROCLAW_PROVIDER", "anthropic");
+        std::env::set_var("CONCLAVE_PROVIDER", "anthropic");
         config.apply_env_overrides();
         assert_eq!(config.default_provider.as_deref(), Some("anthropic"));
 
-        std::env::remove_var("ZEROCLAW_PROVIDER");
+        std::env::remove_var("CONCLAVE_PROVIDER");
     }
 
     #[test]
@@ -4279,7 +4279,7 @@ default_temperature = 0.7
         let _env_guard = env_override_test_guard();
         let mut config = Config::default();
 
-        std::env::remove_var("ZEROCLAW_PROVIDER");
+        std::env::remove_var("CONCLAVE_PROVIDER");
         std::env::set_var("PROVIDER", "openai");
         config.apply_env_overrides();
         assert_eq!(config.default_provider.as_deref(), Some("openai"));
@@ -4322,11 +4322,11 @@ default_temperature = 0.7
         let _env_guard = env_override_test_guard();
         let mut config = Config::default();
 
-        std::env::set_var("ZEROCLAW_MODEL", "gpt-4o");
+        std::env::set_var("CONCLAVE_MODEL", "gpt-4o");
         config.apply_env_overrides();
         assert_eq!(config.default_model.as_deref(), Some("gpt-4o"));
 
-        std::env::remove_var("ZEROCLAW_MODEL");
+        std::env::remove_var("CONCLAVE_MODEL");
     }
 
     #[test]
@@ -4334,7 +4334,7 @@ default_temperature = 0.7
         let _env_guard = env_override_test_guard();
         let mut config = Config::default();
 
-        std::env::remove_var("ZEROCLAW_MODEL");
+        std::env::remove_var("CONCLAVE_MODEL");
         std::env::set_var("MODEL", "anthropic/claude-3.5-sonnet");
         config.apply_env_overrides();
         assert_eq!(
@@ -4350,23 +4350,23 @@ default_temperature = 0.7
         let _env_guard = env_override_test_guard();
         let mut config = Config::default();
 
-        std::env::set_var("ZEROCLAW_WORKSPACE", "/custom/workspace");
+        std::env::set_var("CONCLAVE_WORKSPACE", "/custom/workspace");
         config.apply_env_overrides();
         assert_eq!(config.workspace_dir, PathBuf::from("/custom/workspace"));
 
-        std::env::remove_var("ZEROCLAW_WORKSPACE");
+        std::env::remove_var("CONCLAVE_WORKSPACE");
     }
 
     #[test]
     fn load_or_init_workspace_override_uses_workspace_root_for_config() {
         let _env_guard = env_override_test_guard();
         let temp_home =
-            std::env::temp_dir().join(format!("zeroclaw_test_home_{}", uuid::Uuid::new_v4()));
+            std::env::temp_dir().join(format!("conclave_test_home_{}", uuid::Uuid::new_v4()));
         let workspace_dir = temp_home.join("profile-a");
 
         let original_home = std::env::var("HOME").ok();
         std::env::set_var("HOME", &temp_home);
-        std::env::set_var("ZEROCLAW_WORKSPACE", &workspace_dir);
+        std::env::set_var("CONCLAVE_WORKSPACE", &workspace_dir);
 
         let config = Config::load_or_init().unwrap();
 
@@ -4374,7 +4374,7 @@ default_temperature = 0.7
         assert_eq!(config.config_path, workspace_dir.join("config.toml"));
         assert!(workspace_dir.join("config.toml").exists());
 
-        std::env::remove_var("ZEROCLAW_WORKSPACE");
+        std::env::remove_var("CONCLAVE_WORKSPACE");
         if let Some(home) = original_home {
             std::env::set_var("HOME", home);
         } else {
@@ -4387,13 +4387,13 @@ default_temperature = 0.7
     fn load_or_init_workspace_suffix_uses_legacy_config_layout() {
         let _env_guard = env_override_test_guard();
         let temp_home =
-            std::env::temp_dir().join(format!("zeroclaw_test_home_{}", uuid::Uuid::new_v4()));
+            std::env::temp_dir().join(format!("conclave_test_home_{}", uuid::Uuid::new_v4()));
         let workspace_dir = temp_home.join("workspace");
-        let legacy_config_path = temp_home.join(".zeroclaw").join("config.toml");
+        let legacy_config_path = temp_home.join(".conclave").join("config.toml");
 
         let original_home = std::env::var("HOME").ok();
         std::env::set_var("HOME", &temp_home);
-        std::env::set_var("ZEROCLAW_WORKSPACE", &workspace_dir);
+        std::env::set_var("CONCLAVE_WORKSPACE", &workspace_dir);
 
         let config = Config::load_or_init().unwrap();
 
@@ -4401,7 +4401,7 @@ default_temperature = 0.7
         assert_eq!(config.config_path, legacy_config_path);
         assert!(config.config_path.exists());
 
-        std::env::remove_var("ZEROCLAW_WORKSPACE");
+        std::env::remove_var("CONCLAVE_WORKSPACE");
         if let Some(home) = original_home {
             std::env::set_var("HOME", home);
         } else {
@@ -4414,9 +4414,9 @@ default_temperature = 0.7
     fn load_or_init_workspace_override_keeps_existing_legacy_config() {
         let _env_guard = env_override_test_guard();
         let temp_home =
-            std::env::temp_dir().join(format!("zeroclaw_test_home_{}", uuid::Uuid::new_v4()));
+            std::env::temp_dir().join(format!("conclave_test_home_{}", uuid::Uuid::new_v4()));
         let workspace_dir = temp_home.join("custom-workspace");
-        let legacy_config_dir = temp_home.join(".zeroclaw");
+        let legacy_config_dir = temp_home.join(".conclave");
         let legacy_config_path = legacy_config_dir.join("config.toml");
 
         fs::create_dir_all(&legacy_config_dir).unwrap();
@@ -4430,7 +4430,7 @@ default_model = "legacy-model"
 
         let original_home = std::env::var("HOME").ok();
         std::env::set_var("HOME", &temp_home);
-        std::env::set_var("ZEROCLAW_WORKSPACE", &workspace_dir);
+        std::env::set_var("CONCLAVE_WORKSPACE", &workspace_dir);
 
         let config = Config::load_or_init().unwrap();
 
@@ -4438,7 +4438,7 @@ default_model = "legacy-model"
         assert_eq!(config.config_path, legacy_config_path);
         assert_eq!(config.default_model.as_deref(), Some("legacy-model"));
 
-        std::env::remove_var("ZEROCLAW_WORKSPACE");
+        std::env::remove_var("CONCLAVE_WORKSPACE");
         if let Some(home) = original_home {
             std::env::set_var("HOME", home);
         } else {
@@ -4451,7 +4451,7 @@ default_model = "legacy-model"
     fn load_or_init_uses_persisted_active_workspace_marker() {
         let _env_guard = env_override_test_guard();
         let temp_home =
-            std::env::temp_dir().join(format!("zeroclaw_test_home_{}", uuid::Uuid::new_v4()));
+            std::env::temp_dir().join(format!("conclave_test_home_{}", uuid::Uuid::new_v4()));
         let custom_config_dir = temp_home.join("profiles").join("agent-alpha");
 
         fs::create_dir_all(&custom_config_dir).unwrap();
@@ -4463,7 +4463,7 @@ default_model = "legacy-model"
 
         let original_home = std::env::var("HOME").ok();
         std::env::set_var("HOME", &temp_home);
-        std::env::remove_var("ZEROCLAW_WORKSPACE");
+        std::env::remove_var("CONCLAVE_WORKSPACE");
 
         persist_active_workspace_config_dir(&custom_config_dir).unwrap();
 
@@ -4485,7 +4485,7 @@ default_model = "legacy-model"
     fn load_or_init_env_workspace_override_takes_priority_over_marker() {
         let _env_guard = env_override_test_guard();
         let temp_home =
-            std::env::temp_dir().join(format!("zeroclaw_test_home_{}", uuid::Uuid::new_v4()));
+            std::env::temp_dir().join(format!("conclave_test_home_{}", uuid::Uuid::new_v4()));
         let marker_config_dir = temp_home.join("profiles").join("persisted-profile");
         let env_workspace_dir = temp_home.join("env-workspace");
 
@@ -4499,14 +4499,14 @@ default_model = "legacy-model"
         let original_home = std::env::var("HOME").ok();
         std::env::set_var("HOME", &temp_home);
         persist_active_workspace_config_dir(&marker_config_dir).unwrap();
-        std::env::set_var("ZEROCLAW_WORKSPACE", &env_workspace_dir);
+        std::env::set_var("CONCLAVE_WORKSPACE", &env_workspace_dir);
 
         let config = Config::load_or_init().unwrap();
 
         assert_eq!(config.workspace_dir, env_workspace_dir.join("workspace"));
         assert_eq!(config.config_path, env_workspace_dir.join("config.toml"));
 
-        std::env::remove_var("ZEROCLAW_WORKSPACE");
+        std::env::remove_var("CONCLAVE_WORKSPACE");
         if let Some(home) = original_home {
             std::env::set_var("HOME", home);
         } else {
@@ -4519,8 +4519,8 @@ default_model = "legacy-model"
     fn persist_active_workspace_marker_is_cleared_for_default_config_dir() {
         let _env_guard = env_override_test_guard();
         let temp_home =
-            std::env::temp_dir().join(format!("zeroclaw_test_home_{}", uuid::Uuid::new_v4()));
-        let default_config_dir = temp_home.join(".zeroclaw");
+            std::env::temp_dir().join(format!("conclave_test_home_{}", uuid::Uuid::new_v4()));
+        let default_config_dir = temp_home.join(".conclave");
         let custom_config_dir = temp_home.join("profiles").join("custom-profile");
         let marker_path = default_config_dir.join(ACTIVE_WORKSPACE_STATE_FILE);
 
@@ -4547,11 +4547,11 @@ default_model = "legacy-model"
         let mut config = Config::default();
         let original_provider = config.default_provider.clone();
 
-        std::env::set_var("ZEROCLAW_PROVIDER", "");
+        std::env::set_var("CONCLAVE_PROVIDER", "");
         config.apply_env_overrides();
         assert_eq!(config.default_provider, original_provider);
 
-        std::env::remove_var("ZEROCLAW_PROVIDER");
+        std::env::remove_var("CONCLAVE_PROVIDER");
     }
 
     #[test]
@@ -4560,11 +4560,11 @@ default_model = "legacy-model"
         let mut config = Config::default();
         assert_eq!(config.gateway.port, 3000);
 
-        std::env::set_var("ZEROCLAW_GATEWAY_PORT", "8080");
+        std::env::set_var("CONCLAVE_GATEWAY_PORT", "8080");
         config.apply_env_overrides();
         assert_eq!(config.gateway.port, 8080);
 
-        std::env::remove_var("ZEROCLAW_GATEWAY_PORT");
+        std::env::remove_var("CONCLAVE_GATEWAY_PORT");
     }
 
     #[test]
@@ -4572,7 +4572,7 @@ default_model = "legacy-model"
         let _env_guard = env_override_test_guard();
         let mut config = Config::default();
 
-        std::env::remove_var("ZEROCLAW_GATEWAY_PORT");
+        std::env::remove_var("CONCLAVE_GATEWAY_PORT");
         std::env::set_var("PORT", "9000");
         config.apply_env_overrides();
         assert_eq!(config.gateway.port, 9000);
@@ -4586,11 +4586,11 @@ default_model = "legacy-model"
         let mut config = Config::default();
         assert_eq!(config.gateway.host, "127.0.0.1");
 
-        std::env::set_var("ZEROCLAW_GATEWAY_HOST", "0.0.0.0");
+        std::env::set_var("CONCLAVE_GATEWAY_HOST", "0.0.0.0");
         config.apply_env_overrides();
         assert_eq!(config.gateway.host, "0.0.0.0");
 
-        std::env::remove_var("ZEROCLAW_GATEWAY_HOST");
+        std::env::remove_var("CONCLAVE_GATEWAY_HOST");
     }
 
     #[test]
@@ -4598,7 +4598,7 @@ default_model = "legacy-model"
         let _env_guard = env_override_test_guard();
         let mut config = Config::default();
 
-        std::env::remove_var("ZEROCLAW_GATEWAY_HOST");
+        std::env::remove_var("CONCLAVE_GATEWAY_HOST");
         std::env::set_var("HOST", "0.0.0.0");
         config.apply_env_overrides();
         assert_eq!(config.gateway.host, "0.0.0.0");
@@ -4611,31 +4611,31 @@ default_model = "legacy-model"
         let _env_guard = env_override_test_guard();
         let mut config = Config::default();
 
-        std::env::set_var("ZEROCLAW_TEMPERATURE", "0.5");
+        std::env::set_var("CONCLAVE_TEMPERATURE", "0.5");
         config.apply_env_overrides();
         assert!((config.default_temperature - 0.5).abs() < f64::EPSILON);
 
-        std::env::remove_var("ZEROCLAW_TEMPERATURE");
+        std::env::remove_var("CONCLAVE_TEMPERATURE");
     }
 
     #[test]
     fn env_override_temperature_out_of_range_ignored() {
         let _env_guard = env_override_test_guard();
         // Clean up any leftover env vars from other tests
-        std::env::remove_var("ZEROCLAW_TEMPERATURE");
+        std::env::remove_var("CONCLAVE_TEMPERATURE");
 
         let mut config = Config::default();
         let original_temp = config.default_temperature;
 
         // Temperature > 2.0 should be ignored
-        std::env::set_var("ZEROCLAW_TEMPERATURE", "3.0");
+        std::env::set_var("CONCLAVE_TEMPERATURE", "3.0");
         config.apply_env_overrides();
         assert!(
             (config.default_temperature - original_temp).abs() < f64::EPSILON,
             "Temperature 3.0 should be ignored (out of range)"
         );
 
-        std::env::remove_var("ZEROCLAW_TEMPERATURE");
+        std::env::remove_var("CONCLAVE_TEMPERATURE");
     }
 
     #[test]
@@ -4704,9 +4704,9 @@ default_model = "legacy-model"
         let _env_guard = env_override_test_guard();
         let mut config = Config::default();
 
-        std::env::set_var("ZEROCLAW_STORAGE_PROVIDER", "postgres");
-        std::env::set_var("ZEROCLAW_STORAGE_DB_URL", "postgres://example/db");
-        std::env::set_var("ZEROCLAW_STORAGE_CONNECT_TIMEOUT_SECS", "15");
+        std::env::set_var("CONCLAVE_STORAGE_PROVIDER", "postgres");
+        std::env::set_var("CONCLAVE_STORAGE_DB_URL", "postgres://example/db");
+        std::env::set_var("CONCLAVE_STORAGE_CONNECT_TIMEOUT_SECS", "15");
 
         config.apply_env_overrides();
 
@@ -4720,9 +4720,9 @@ default_model = "legacy-model"
             Some(15)
         );
 
-        std::env::remove_var("ZEROCLAW_STORAGE_PROVIDER");
-        std::env::remove_var("ZEROCLAW_STORAGE_DB_URL");
-        std::env::remove_var("ZEROCLAW_STORAGE_CONNECT_TIMEOUT_SECS");
+        std::env::remove_var("CONCLAVE_STORAGE_PROVIDER");
+        std::env::remove_var("CONCLAVE_STORAGE_DB_URL");
+        std::env::remove_var("CONCLAVE_STORAGE_CONNECT_TIMEOUT_SECS");
     }
 
     #[test]
@@ -4747,13 +4747,13 @@ default_model = "legacy-model"
         clear_proxy_env_test_vars();
 
         let mut config = Config::default();
-        std::env::set_var("ZEROCLAW_PROXY_ENABLED", "true");
-        std::env::set_var("ZEROCLAW_HTTP_PROXY", "http://127.0.0.1:7890");
+        std::env::set_var("CONCLAVE_PROXY_ENABLED", "true");
+        std::env::set_var("CONCLAVE_HTTP_PROXY", "http://127.0.0.1:7890");
         std::env::set_var(
-            "ZEROCLAW_PROXY_SERVICES",
+            "CONCLAVE_PROXY_SERVICES",
             "provider.openai, tool.http_request",
         );
-        std::env::set_var("ZEROCLAW_PROXY_SCOPE", "services");
+        std::env::set_var("CONCLAVE_PROXY_SCOPE", "services");
 
         config.apply_env_overrides();
 
@@ -4776,11 +4776,11 @@ default_model = "legacy-model"
         clear_proxy_env_test_vars();
 
         let mut config = Config::default();
-        std::env::set_var("ZEROCLAW_PROXY_ENABLED", "true");
-        std::env::set_var("ZEROCLAW_PROXY_SCOPE", "environment");
-        std::env::set_var("ZEROCLAW_HTTP_PROXY", "http://127.0.0.1:7890");
-        std::env::set_var("ZEROCLAW_HTTPS_PROXY", "http://127.0.0.1:7891");
-        std::env::set_var("ZEROCLAW_NO_PROXY", "localhost,127.0.0.1");
+        std::env::set_var("CONCLAVE_PROXY_ENABLED", "true");
+        std::env::set_var("CONCLAVE_PROXY_SCOPE", "environment");
+        std::env::set_var("CONCLAVE_HTTP_PROXY", "http://127.0.0.1:7890");
+        std::env::set_var("CONCLAVE_HTTPS_PROXY", "http://127.0.0.1:7891");
+        std::env::set_var("CONCLAVE_NO_PROXY", "localhost,127.0.0.1");
 
         config.apply_env_overrides();
 
