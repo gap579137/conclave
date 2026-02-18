@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" >/dev/null 2>&1 && pwd || pwd)"
 BOOTSTRAP_LOCAL="$SCRIPT_DIR/bootstrap.sh"
-REPO_URL="https://github.com/conclave-labs/conclave.git"
+REPO_URL="https://github.com/gap579137/conclave.git"
 
 echo "[deprecated] scripts/install.sh -> bootstrap.sh" >&2
 

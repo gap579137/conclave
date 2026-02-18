@@ -88,7 +88,7 @@ pip install piper-tts
 
 ```bash
 # Clone and build
-git clone https://github.com/conclave-labs/conclave
+git clone https://github.com/gap579137/conclave
 cd conclave
 cargo build -p conclave-robot-kit --release
 ```

@@ -1,11 +1,11 @@
 # Conclave Docker Compose Example
-# 
+#
 # Quick start:
 #   1. Copy this file and set your API key
 #   2. Run: docker compose up -d
 #   3. Access gateway at http://localhost:3000
 #
-# For more info: https://github.com/conclave-labs/conclave
+# For more info: https://github.com/gap579137/conclave
 
 services:
   conclave:
@@ -14,39 +14,39 @@ services:
     # build: .
     container_name: conclave
     restart: unless-stopped
-    
+
     environment:
       # Required: Your LLM provider API key
       - API_KEY=${API_KEY:-}
       # Or use the prefixed version:
       # - CONCLAVE_API_KEY=${CONCLAVE_API_KEY:-}
-      
+
       # Optional: LLM provider (default: openrouter)
       # Options: openrouter, openai, anthropic, ollama
       - PROVIDER=${PROVIDER:-openrouter}
-      
+
       # Allow public bind inside Docker (required for container networking)
       - CONCLAVE_ALLOW_PUBLIC_BIND=true
-      
+
       # Optional: Model override
       # - CONCLAVE_MODEL=anthropic/claude-sonnet-4-20250514
-      
+
     volumes:
       # Persist workspace and config (must match WORKDIR/HOME in Dockerfile)
       - conclave-data:/conclave-data
-      
+
     ports:
       # Gateway API port (override HOST_PORT if 3000 is taken)
       - "${HOST_PORT:-3000}:3000"
-    
+
     # Resource limits
     deploy:
       resources:
         limits:
-          cpus: '2'
+          cpus: "2"
           memory: 2G
         reservations:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 512M
 
     # Health check — uses lightweight status instead of full diagnostics.

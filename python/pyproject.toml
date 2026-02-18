@@ -50,10 +50,10 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/conclave-labs/conclave"
-Documentation = "https://github.com/conclave-labs/conclave/tree/main/python"
-Repository = "https://github.com/conclave-labs/conclave"
-Issues = "https://github.com/conclave-labs/conclave/issues"
+Homepage = "https://github.com/gap579137/conclave"
+Documentation = "https://github.com/gap579137/conclave/tree/main/python"
+Repository = "https://github.com/gap579137/conclave"
+Issues = "https://github.com/gap579137/conclave/issues"
 
 [tool.hatch.build.targets.wheel]
 packages = ["conclave_tools"]

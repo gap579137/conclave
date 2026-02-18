@@ -7,7 +7,7 @@ Last verified: **February 18, 2026**.
 ## Option A (Recommended): Clone + local script
 
 ```bash
-git clone https://github.com/conclave-labs/conclave.git
+git clone https://github.com/gap579137/conclave.git
 cd conclave
 ./bootstrap.sh
 ```

@@ -2,9 +2,10 @@
   <img src="conclave.png" alt="Conclave" width="200" />
 </p>
 
-<h1 align="center">Conclave 🦀</h1>
+<h1 align="center">Conclave 🔥</h1>
 
 <p align="center">
+    <strong>Lightning-fast, ultra-light AI assistant infrastructure — orchestrate a Conclave of agents, deploy anywhere, replace anything</strong><br>
   <strong>Zero overhead. Zero compromise. 100% Rust. 100% Agnostic.</strong><br>
   ⚡️ <strong>Runs on $10 hardware with <5MB RAM: That's 99% less memory than OpenClaw and 98% cheaper than a Mac mini!</strong>
 </p>
@@ -172,7 +173,7 @@ curl -LsSf https://raw.githubusercontent.com/conclave-labs/conclave/main/scripts
 
 ```bash
 # Recommended: clone then run local bootstrap script
-git clone https://github.com/conclave-labs/conclave.git
+git clone https://github.com/gap579137/conclave.git
 cd conclave
 ./bootstrap.sh
 
@@ -192,7 +193,7 @@ curl -fsSL https://raw.githubusercontent.com/conclave-labs/conclave/main/scripts
 Details: [`docs/one-click-bootstrap.md`](docs/one-click-bootstrap.md) (toolchain mode may request `sudo` for system packages).
 
 ```bash
-git clone https://github.com/conclave-labs/conclave.git
+git clone https://github.com/gap579137/conclave.git
 cd conclave
 cargo build --release --locked
 cargo install --path . --force --locked

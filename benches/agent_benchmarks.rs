@@ -7,7 +7,7 @@
 //!
 //! Run: `cargo bench`
 //!
-//! Ref: https://github.com/conclave-labs/conclave/issues/618 (item 7)
+//! Ref: https://github.com/gap579137/conclave/issues/618 (item 7)
 
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 use std::sync::{Arc, Mutex};

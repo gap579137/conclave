@@ -6,7 +6,7 @@ Thanks for your interest in contributing to Conclave! This guide will help you g
 
 ```bash
 # Clone the repo
-git clone https://github.com/conclave-labs/conclave.git
+git clone https://github.com/gap579137/conclave.git
 cd conclave
 
 # Enable the pre-push hook (runs fmt, clippy, tests before every push)

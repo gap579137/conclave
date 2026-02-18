@@ -15,11 +15,11 @@
 ### 1) 编译回归：`reply_to` / `reply_target`
 
 - 上游已修复并合并：
-  - PR #541: https://github.com/conclave-labs/conclave/pull/541
-  - PR #768: https://github.com/conclave-labs/conclave/pull/768
+  - PR #541: https://github.com/gap579137/conclave/pull/541
+  - PR #768: https://github.com/gap579137/conclave/pull/768
 - 历史相关：
-  - Issue #537: https://github.com/conclave-labs/conclave/issues/537
-  - Issue #761: https://github.com/conclave-labs/conclave/issues/761
+  - Issue #537: https://github.com/gap579137/conclave/issues/537
+  - Issue #761: https://github.com/gap579137/conclave/issues/761
 
 ### 2) DeepSeek“说一句动一下”
 

@@ -1,6 +1,6 @@
 # conclave-tools
 
-Python companion package for [Conclave](https://github.com/conclave-labs/conclave) — LangGraph-based tool calling for consistent LLM agent execution.
+Python companion package for [Conclave](https://github.com/gap579137/conclave) — LangGraph-based tool calling for consistent LLM agent execution.
 
 ## Why This Package?
 

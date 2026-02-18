@@ -89,7 +89,7 @@ ls -lh target/release/conclave
 ## 一键部署
 
 ```bash
-git clone https://github.com/conclave-labs/conclave.git
+git clone https://github.com/gap579137/conclave.git
 cd conclave
 ./bootstrap.sh
 ```
@@ -101,7 +101,7 @@ cd conclave
 ## 快速开始
 
 ```bash
-git clone https://github.com/conclave-labs/conclave.git
+git clone https://github.com/gap579137/conclave.git
 cd conclave
 cargo build --release --locked
 cargo install --path . --force --locked
